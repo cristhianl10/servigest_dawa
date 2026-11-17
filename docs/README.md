@@ -19,6 +19,7 @@ Este repositorio de documentación aplica **Spec-Driven Development (SDD)**: pri
 | 08 | [Despliegue y operación](08-despliegue.md) | Ambientes, variables, Docker, CI/CD y runbook | DevOps |
 | 09 | [Manual de usuario](09-manual-usuario.md) | Uso por rol y resolución de dudas | Usuarios finales |
 | 10 | [Matriz de trazabilidad](10-trazabilidad.md) | Requisito ↔ API ↔ prueba ↔ tarea | Docente + equipo |
+| 11 | [Plan de equipo y ownership](11-plan-equipo.md) | División por integrante, dueños de datos, contratos y handoffs | Todo el equipo |
 
 ## Flujo SDD del equipo
 

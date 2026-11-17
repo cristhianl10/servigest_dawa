@@ -4,14 +4,14 @@
 
 ## 1. Roles del equipo
 
-| Código | Rol principal | Responsabilidades transversales |
-| :--- | :--- | :--- |
-| E1 | Backend / Base de datos | Modelo, migraciones, auth, seguridad, revisión de API |
-| E2 | Backend / Reglas de negocio | Solicitudes, máquina de estados, SLA, auditoría, dashboard SQL |
-| E3 | Frontend | Rutas, formularios, flujos, estados UI, accesibilidad |
-| E4 | Full stack / QA / DevOps | Notificaciones SSE, dashboard UI, pruebas, CI/CD, despliegue |
+| Código | Integrante | Rol principal | Responsabilidades transversales |
+| :--- | :--- | :--- | :--- |
+| E1 | **Cristhian Loor** | Backend / Base de datos / Seguridad | Modelo, migraciones, auth, usuarios, catálogos, revisión de contratos API |
+| E2 | **Jeremy Marquez** | Backend / Reglas de negocio | Solicitudes, máquina de estados, SLA, asignaciones, auditoría, dashboard SQL |
+| E3 | **Jared Ochoa** | Frontend | Rutas, formularios, flujos, estados UI, accesibilidad, manual de usuario |
+| E4 | **Neil Goyes** | Full stack / QA / DevOps | Notificaciones SSE, dashboard UI, pruebas E2E, CI/CD, despliegue |
 
-> Todos revisan código de todos. Cada integrante debe poder explicar y modificar en vivo cualquier módulo (defensa individual de 3 puntos).
+> La asignación detallada por integrante, entidades, endpoints, contratos y handoffs está en [`11-plan-equipo.md`](11-plan-equipo.md). Todos revisan código de todos y deben poder explicar y modificar en vivo cualquier módulo (defensa individual de 3 puntos).
 
 ## 2. Convenciones del tablero
 
@@ -60,9 +60,9 @@ Cada tarea incluye: ID, requisito, descripción, criterio de aceptación, depend
 | T-015 | Middlewares `authenticate` + `authorize` | EP-02 | NFR-SEG-03 | E1 | 2 | T-012 |
 | T-016 | Rate limit de login y bloqueo temporal | EP-02 | NFR-SEG-04 | E1 | 2 | T-012 |
 | T-017 | CRUD usuarios y roles | EP-01 | RF-USR-01/02 | E1 | 3 | T-015 |
-| T-018 | CRUD clientes, sedes y equipos | EP-01 | RF-CLI-01/02/03 | E2 | 3 | T-015 |
-| T-019 | CRUD técnicos y especialidades | EP-01 | RF-TEC-01/02 | E2 | 3 | T-017 |
-| T-020 | CRUD catálogos, parámetros y feriados | EP-01 | RF-CAT-01…04 | E2 | 3 | T-015 |
+| T-018 | CRUD clientes, sedes y equipos | EP-01 | RF-CLI-01/02/03 | E1 | 3 | T-015 |
+| T-019 | CRUD técnicos y especialidades | EP-01 | RF-TEC-01/02 | E1 | 3 | T-017 |
+| T-020 | CRUD catálogos, parámetros y feriados | EP-01 | RF-CAT-01…04 | E1 | 3 | T-015 |
 | T-021 | Registro de solicitud con código único y `dueAt` | EP-03 | RF-SOL-01, RN-09 | E2 | 3 | T-018, T-020 |
 | T-022 | Listado paginado y filtrado por rol | EP-03 | RF-SOL-02, RN-03 | E2 | 3 | T-021 |
 | T-023 | Detalle y edición con bloqueo optimista | EP-03 | RF-SOL-03/04, RN-08 | E2 | 3 | T-021 |
@@ -152,12 +152,12 @@ gantt
 
 | Integrante | Semana 1 | Semana 2 | Semana 3 | Semana 4 | Semana 5 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| E1 | T-001…T-004, T-007, T-008, T-010 | T-011…T-017 | Apoyo API + revisión | T-049, T-050 | T-052, T-053, T-058 |
-| E2 | T-005 | T-018…T-025 | Apoyo API + revisión | T-036…T-041, T-045…T-047 | T-051, T-052 |
-| E3 | T-006 | Apoyo UI + contratos | T-026…T-033, T-035 | T-036 UI, T-044 | T-054, T-055, T-058 |
-| E4 | T-009 | T-025 + CI inicial | T-034 | T-042…T-044, T-048 | T-051…T-057, T-059, T-060 |
+| **Cristhian (E1)** | T-001…T-004, T-007, T-008, T-010 | T-011…T-020 | Revisión de contratos y apoyo API | T-049, T-050 | T-052, T-053, T-058 |
+| **Jeremy (E2)** | T-005 | T-021…T-024 | Apoyo API y cierre de contratos | T-036…T-041, T-045…T-047 | T-051, T-052 |
+| **Jared (E3)** | T-006 | Apoyo UI y contratos | T-026…T-033, T-035 | Integración UI de reglas y revisión | T-054, T-055, T-058 |
+| **Neil (E4)** | T-009 | T-025 + CI inicial | T-034 | T-042…T-044, T-048 | T-051, T-054, T-056, T-057, T-059, T-060 |
 
-**Regla de rotación:** cada integrante dedica al menos 20 % de su tiempo a revisar módulos ajenos y a preparar su defensa individual.
+**Regla de rotación:** cada integrante dedica al menos 20 % de su tiempo a revisar módulos ajenos y a preparar su defensa individual. La división detallada por entidad, endpoint y contrato está en [`11-plan-equipo.md`](11-plan-equipo.md).
 
 ## 7. Dependencias críticas y ruta crítica
 
