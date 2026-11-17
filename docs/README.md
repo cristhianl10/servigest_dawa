@@ -20,6 +20,7 @@ Este repositorio de documentación aplica **Spec-Driven Development (SDD)**: pri
 | 09 | [Manual de usuario](09-manual-usuario.md) | Uso por rol y resolución de dudas | Usuarios finales |
 | 10 | [Matriz de trazabilidad](10-trazabilidad.md) | Requisito ↔ API ↔ prueba ↔ tarea | Docente + equipo |
 | 11 | [Plan de equipo y ownership](11-plan-equipo.md) | División por integrante, dueños de datos, contratos y handoffs | Todo el equipo |
+| 12 | [Documentos por integrante](equipo/README.md) | Alcance, tareas, pruebas, handoffs y entregables de cada integrante | Todo el equipo |
 
 ## Flujo SDD del equipo
 

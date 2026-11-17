@@ -248,3 +248,66 @@ Severidad: **Crítica** (bloquea flujo/seguridad), **Alta** (regla incumplida), 
 ## 10. Trazabilidad de pruebas
 
 Cada caso `TC-*` referencia su requisito `RF-*`/`RN-*` y su tarea `T-*` en `10-trazabilidad.md`. No se acepta una regla de negocio sin caso de prueba asociado.
+
+## 11. Asignación de pruebas por integrante
+
+Cada integrante escribe, ejecuta y mantiene las pruebas de su dominio. La revisión cruzada es obligatoria: ningún integrante aprueba solo sus propias pruebas. El informe consolidado lo arma Cristhian con evidencia de los cuatro.
+
+| Integrante | Familias de prueba | Archivos principales | Evidencia mínima |
+| :--- | :--- | :--- | :--- |
+| **Jared Ochoa** | `TC-DB`, `TC-AUTH`, `TC-USR`, `TC-CLI`, `TC-TEC`, `TC-CAT`, `TC-SEC`, `TC-ATT` | `apps/api/tests/unit/db/`, `apps/api/tests/integration/auth/`, `apps/api/tests/integration/master-data/`, `apps/api/tests/security/` | Migración limpia, matriz de autorización/IDOR, reporte de integridad y cobertura de auth. |
+| **Jeremy Marquez** | `TC-RN`, `TC-SOL`, `TC-ASI`, `TC-AUD`, `TC-DASH` | `apps/api/tests/unit/domain/`, `apps/api/tests/integration/requests/`, `apps/api/tests/integration/assignments/`, `apps/api/tests/integration/dashboard/` | Suite de reglas, SLA, estados, asignaciones y dashboard; `EXPLAIN` de consultas críticas. |
+| **Cristhian Loor** | `TC-RN` (aceptación), `TC-SLA`, `TC-NOT`, `TC-SSE`, `TC-E2E`, `TC-CI`, `TC-DEP`, `TC-PERF` | `apps/api/tests/unit/domain/`, `apps/api/tests/integration/notifications/`, `apps/web/e2e/`, `.github/workflows/`, `tests/performance/` | Suite de reglas/SLA, pipeline en verde, E2E-01/02, SSE probado, despliegue reproducible y métricas de rendimiento. |
+| **Neil Goyes** | `TC-FE`, `TC-UI`, `TC-CON`, `TC-ACC`, `TC-E2E` (soporte) | `apps/web/tests/components/`, `apps/web/tests/ui/`, `apps/web/tests/contract/`, `apps/web/e2e/` | Pruebas de componentes, formularios, rutas, SSE en UI, accesibilidad y capturas responsive. |
+
+### 11.1. Casos mínimos por integrante
+
+**Jared**
+
+- `TC-DB-01`: migración desde cero sin diferencias (`prisma migrate diff` vacío).
+- `TC-DB-02`: constraints, unique, foreign keys y borrado restringido.
+- `TC-AUTH-01/02`: login válido/inválido, bloqueo, refresh rotativo y revocación de familia.
+- `TC-USR-01`: CRUD de usuarios/roles; no eliminar al último administrador.
+- `TC-CLI-01/02`: aislamiento por `client_id` y acceso a sedes/equipos.
+- `TC-TEC-01/02`: especialidades, disponibilidad y carga del técnico.
+- `TC-CAT-01`: catálogos, parámetros y feriados.
+- `TC-SEC-01/02`: IDOR, rate limit, CORS y cabeceras.
+- `TC-ATT-01`: subida, tipo/tamaño, descarga autorizada y path traversal.
+
+**Jeremy**
+
+- `TC-RN-01…RN-08`: una prueba por regla, incluyendo casos límite y de error.
+- `TC-SOL-01…08`: registro, código único, `dueAt`, listado por rol, detalle, edición con bloqueo optimista y adjuntos.
+- `TC-ASI-01…03`: asignación válida, reasignación con motivo y rechazo por especialidad/carga.
+- `TC-AUD-01/02`: historial inmutable, ordenado y con actor/estado anterior/nuevo.
+- `TC-DASH-01…03`: indicadores, filtros y permisos; consultas sin N+1.
+- `TC-RN-06`: calendario laboral, feriados, zona horaria y límites exactos del SLA.
+
+**Cristhian**
+
+- `TC-RN-01…RN-08`: suite independiente de aceptación de reglas (T-051), escrita desde la especificación.
+- `TC-SLA-01/02`: calendario laboral, feriados, zona horaria y límites exactos (T-025).
+- `TC-NOT-01/02`: persistencia por evento, lectura, badge y no duplicados.
+- `TC-SSE-01/02`: autenticación del stream, reconexión, `Last-Event-ID` y aislamiento por usuario/rol.
+- `TC-E2E-01/02`: flujos completos de Playwright en CI.
+- `TC-CI-01`: lint, typecheck, test y build obligatorios en cada PR.
+- `TC-DEP-01/02`: `docker compose up`, healthcheck, migraciones, seed, backup/restore.
+- `TC-PERF-01/02`: dashboard p95 < 2 s con 10 000 solicitudes y 50 conexiones SSE.
+
+**Neil**
+
+- `TC-FE-01/02`: componentes base, estados de carga/error/vacío y navegación por rol.
+- `TC-UI-01/02`: validación de formularios, teclado, foco, responsive 360/768/1280.
+- `TC-CON-01`: esquemas Zod alineados con OpenAPI; sin `any` en contratos.
+- `TC-UI-03`: SSE actualiza badge/toasts sin recargar.
+- `TC-ACC-01`: axe/Lighthouse sin errores críticos.
+- `TC-E2E-UI-01`: soporte a E2E con `data-testid` estables y corrección de defectos visuales.
+
+**Nota de no duplicidad:** `TC-RN-06` se escribe con dos enfoques distintos. Jeremy prueba la implementación del motor de SLA; Cristhian prueba los 7 casos de aceptación de T-025 desde la especificación. Ambos deben pasar y se revisan de forma cruzada.
+
+### 11.2. Regla de evidencia
+
+- Cada PR incluye el comando ejecutado y la salida resumida de sus pruebas.
+- Las pruebas que fallen bloquean el merge; no se aceptan `skip` sin issue y fecha.
+- Cristhian consolida el informe final, pero cada dueño entrega su sección y sus capturas.
+- La defensa individual incluye ejecutar en vivo al menos una prueba del módulo asignado.
