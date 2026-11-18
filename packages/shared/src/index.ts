@@ -6,4 +6,5 @@ export * from './notifications.ts';
 export * from './errors.ts';
 export * from './auth.ts';
 export * from './users.ts';
+export * from './master-data.ts';
 export * from './requests.ts';

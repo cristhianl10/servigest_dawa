@@ -8,6 +8,15 @@ import { notificationsRouter } from './presentation/routes/notifications.routes.
 import { authRouter } from './modules/auth/auth.routes.ts';
 import { requestsRouter } from './modules/requests/requests.routes.ts';
 import { rolesRouter, usersRouter } from './modules/users/users.routes.ts';
+import { assetsRouter, clientsRouter, sitesRouter } from './modules/clients/clients.routes.ts';
+import { techniciansRouter } from './modules/technicians/technicians.routes.ts';
+import {
+  holidaysRouter,
+  parametersRouter,
+  serviceCategoriesRouter,
+  specialtiesRouter,
+  statusesRouter,
+} from './modules/catalogs/catalogs.routes.ts';
 
 export function createApp(): Express {
   const app = express();
@@ -33,6 +42,15 @@ export function createApp(): Express {
   app.use('/api/auth', authRouter);
   app.use('/api/usuarios', usersRouter);
   app.use('/api/roles', rolesRouter);
+  app.use('/api/clientes', clientsRouter);
+  app.use('/api/sedes', sitesRouter);
+  app.use('/api/equipos', assetsRouter);
+  app.use('/api/tecnicos', techniciansRouter);
+  app.use('/api/especialidades', specialtiesRouter);
+  app.use('/api/categorias-servicio', serviceCategoriesRouter);
+  app.use('/api/estados', statusesRouter);
+  app.use('/api/parametros', parametersRouter);
+  app.use('/api/feriados', holidaysRouter);
   app.use('/api/solicitudes', requestsRouter);
   app.use('/api/notificaciones', notificationsRouter);
 
