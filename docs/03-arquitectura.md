@@ -306,7 +306,7 @@ sequenceDiagram
 
 - **Contexto:** frontend y backend deben coincidir en tipos y validaciones.
 - **Decisión:** pnpm workspaces con `packages/shared`.
-- **Consecuencias:** un solo `pnpm install`; el pipeline debe compilar el paquete antes de las apps.
+- **Consecuencias:** un solo `pnpm install`; el build debe compilar el paquete antes de las apps.
 
 ### ADR-006 · Estados en catálogo + máquina en dominio
 

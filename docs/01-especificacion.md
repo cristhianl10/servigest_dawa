@@ -236,7 +236,7 @@ Formato: **Como** rol, **quiero** acción, **para** beneficio.
 | `MEDIA` | 24 |
 | `BAJA` | 72 |
 
-- Calendario: lunes a viernes, 08:00–17:00, zona `America/Guayaquil`; excluye feriados configurados.
+- Calendario: lunes a viernes, 08:00–17:00 con 1 hora de almuerzo no laborable (13:00–14:00, totalizando 8 horas laborables efectivas por día), zona `America/Guayaquil`; excluye feriados configurados.
 - El reloj inicia en `created_at`.
 - El tiempo en `PENDIENTE_INFO` se acumula como pausa y extiende la fecha límite.
 - `fechaLimite` se recalcula al cambiar prioridad y al reanudar desde pausa.

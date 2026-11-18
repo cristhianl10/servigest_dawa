@@ -8,7 +8,7 @@ Este directorio deriva de [`../11-plan-equipo.md`](../11-plan-equipo.md) y de lo
 | :--- | :--- | :-: | :--- | :--- |
 | [`01-jared-ochoa.md`](01-jared-ochoa.md) | Jared Ochoa | JAR | Base de datos / backend core / seguridad | `dev/jared` |
 | [`02-jeremy-marquez.md`](02-jeremy-marquez.md) | Jeremy Marquez | JER | Backend de dominio | `dev/jeremy` |
-| [`03-cristhian-loor.md`](03-cristhian-loor.md) | Cristhian Loor | CRI | Full stack / QA / DevOps | `dev/cristhian` |
+| [`03-cristhian-loor.md`](03-cristhian-loor.md) | Cristhian Loor | CRI | Full stack / QA / despliegue | `dev/cristhian` |
 | [`04-neil-goyes.md`](04-neil-goyes.md) | Neil Goyes | NEI | Frontend | `dev/neil` |
 
 ## Documentos generales de lectura obligatoria
@@ -30,7 +30,7 @@ Lectura adicional según rol: [`../07-implementacion.md`](../07-implementacion.m
 ## Reglas comunes
 
 - **SDD obligatorio:** especificación → contrato → prueba que falla → implementación → evidencia → trazabilidad. No se implementa nada que no esté en `01`, `02` o `04`.
-- **Una rama por integrante:** `dev/jared`, `dev/jeremy`, `dev/cristhian`, `dev/neil`. PR a `develop`; prohibido commit directo a `develop`.
+- **Una rama por integrante:** `dev/jared`, `dev/jeremy`, `dev/cristhian`, `dev/neil`. PR a `master`; prohibido commit directo a `master`.
 - **Dueño único por artefacto:** solo Jared genera/mergea migraciones Prisma; solo Neil modifica la estructura de `packages/shared`; solo Jared consolida OpenAPI; los cambios de contrato requieren dos revisores.
 - **Pruebas propias:** cada integrante escribe y ejecuta las pruebas de su módulo. Ningún PR se aprueba sin pruebas y sin revisión cruzada.
 - **Evidencia:** cada PR incluye comandos ejecutados, salida resumida de pruebas y enlace al caso `TC-*` o tarea `T-*`.
@@ -46,7 +46,7 @@ Lectura adicional según rol: [`../07-implementacion.md`](../07-implementacion.m
 | `schema.prisma` y migraciones | Jared | Jeremy propone cambios | Jared genera y mergea migraciones. |
 | SSE | Cristhian | Jeremy (eventos), Neil (UI) | Jeremy emite eventos; Cristhian entrega; Neil consume. |
 | Dashboard | Jeremy (SQL/API) + Neil (UI) | Jared (índices), Cristhian (pruebas) | Contrato `DashboardIndicators` lo define Jeremy. |
-| E2E | Cristhian | Neil (selectores/UI) | Playwright en CI; Neil corrige defectos visuales. |
+| E2E | Cristhian | Neil (selectores/UI) | Playwright en el entorno de verificación local; Neil corrige defectos visuales. |
 | Manuales | Jared / Cristhian / Neil | Jeremy (revisión) | Jared: BD; Cristhian: despliegue; Neil: usuario. |
 
 ## Criterio de cierre por integrante
@@ -54,7 +54,7 @@ Lectura adicional según rol: [`../07-implementacion.md`](../07-implementacion.m
 Un integrante termina cuando:
 
 1. Sus tareas `T-*` están en `Hecho` con PR aprobado.
-2. Sus pruebas `TC-*` pasan en CI y tienen evidencia.
+2. Sus pruebas `TC-*` pasan en el entorno de verificación y tienen evidencia.
 3. Sus artefactos están enlazados desde `10-trazabilidad.md`.
 4. Su documento específico está actualizado.
 5. Puede ejecutar y explicar su módulo en la defensa.

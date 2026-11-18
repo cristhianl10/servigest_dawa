@@ -130,56 +130,25 @@ volumes:
 pg_dump "$DATABASE_URL" -Fc -f backup_$(date +%Y%m%d_%H%M).dump
 ```
 
-## 5. CI con GitHub Actions
+## 5. Verificación local antes del despliegue
 
-```yaml
-name: ci
-on:
-  push:
-    branches: [main, "dev/**"]
-  pull_request:
+La verificación se realiza en local antes de desplegar, contra una base de prueba:
 
-jobs:
-  quality:
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
-          POSTGRES_DB: servigest_test
-        ports: ["5432:5432"]
-        options: >-
-          --health-cmd "pg_isready -U test"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
-    env:
-      DATABASE_URL: postgresql://test:test@localhost:5432/servigest_test?schema=public
-      JWT_SECRET: ci-secret-ci-secret-ci-secret-ci-secret
-      CORS_ORIGIN: http://localhost:5173
-      APP_TIMEZONE: America/Guayaquil
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm lint
-      - run: pnpm typecheck
-      - run: pnpm --filter api prisma migrate deploy
-      - run: pnpm test
-      - run: pnpm test:integration
-      - run: pnpm build
+```bash
+docker compose up -d db
+pnpm install --frozen-lockfile
+pnpm lint
+pnpm typecheck
+pnpm --filter api prisma migrate deploy
+pnpm test
+pnpm test:integration
+pnpm test:e2e
+pnpm build
 ```
 
-- El merge a `main` exige el job `quality` en verde.
-- Las pruebas E2E se ejecutan en un job separado con `pnpm exec playwright install --with-deps`.
+- Si alguna verificación falla, no se despliega.
+- Las pruebas E2E requieren `pnpm exec playwright install --with-deps`.
+- El resultado se adjunta al informe de pruebas.
 
 ## 6. Despliegue en producción (referencia)
 
@@ -278,6 +247,6 @@ pg_restore --clean --if-exists -d "$DATABASE_URL" backup_20261115.dump
 - [ ] Swagger accesible.
 - [ ] Usuarios demo funcionan.
 - [ ] Healthcheck responde.
-- [ ] Pipeline CI en verde.
+- [ ] Verificación local completa (lint, typecheck, pruebas y build).
 - [ ] Aplicación desplegada y accesible por URL.
 - [ ] Manuales y video adjuntos.

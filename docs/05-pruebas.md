@@ -25,7 +25,7 @@ flowchart TB
 - Cada prueba crea y limpia sus datos (transacción por test o `truncate` controlado).
 - Los tests no dependen del orden de ejecución.
 - Datos sensibles de prueba solo en el entorno de test.
-- Se ejecutan en CI en cada push y obligatoriamente antes del merge.
+- Se ejecutan localmente antes de cada push y obligatoriamente antes del merge.
 
 ## 2. Entornos de prueba
 
@@ -33,7 +33,6 @@ flowchart TB
 | :--- | :--- | :--- |
 | Local unitario | Sin BD | Dominio puro. |
 | Local integración | PostgreSQL en Docker (`servigest_test`) | Endpoints y repositorios. |
-| CI | Servicio PostgreSQL efímero | Pipeline. |
 | Demo | Datos seed | E2E y presentación. |
 
 Comandos previstos:
@@ -99,8 +98,8 @@ pnpm test:coverage
 
 | Caso | Entrada | Esperado |
 | :--- | :--- | :--- |
-| TC-RN-06-01 | Creada lunes 09:00, prioridad ALTA (8 h) | Vence martes 08:00 (7 h lunes + 1 h martes) |
-| TC-RN-06-02 | Creada viernes 15:00, prioridad ALTA (8 h) | Vence martes 10:00 (2 h vie + 6 h lun) |
+| TC-RN-06-01 | Creada lunes 09:00, prioridad ALTA (8 h) | Vence martes 09:00 (7 h lunes + 1 h martes, almuerzo 13:00-14:00) |
+| TC-RN-06-02 | Creada viernes 15:00, prioridad ALTA (8 h) | Vence lunes 15:00 (2 h vie + 6 h lun, almuerzo 13:00-14:00) |
 | TC-RN-06-03 | Feriado intermedio | Se salta el feriado |
 | TC-RN-06-04 | Pausa de 60 min en `PENDIENTE_INFO` | `dueAt` se extiende 60 min laborables |
 | TC-RN-06-05 | Cambio de prioridad MEDIA→CRITICA | `dueAt` se recalcula |
@@ -241,7 +240,7 @@ Severidad: **Crítica** (bloquea flujo/seguridad), **Alta** (regla incumplida), 
 - 100 % de las reglas de negocio con al menos una prueba automatizada en verde.
 - 0 defectos críticos o altos abiertos.
 - Todos los endpoints de la matriz de integración cubiertos.
-- Los dos flujos E2E pasan en CI.
+- Los dos flujos E2E pasan en el entorno de verificación.
 - Cobertura ≥ 80 % en `domain` y `services`.
 - Informe de pruebas con evidencias adjuntas.
 
@@ -257,7 +256,7 @@ Cada integrante escribe, ejecuta y mantiene las pruebas de su dominio. La revisi
 | :--- | :--- | :--- | :--- |
 | **Jared Ochoa** | `TC-DB`, `TC-AUTH`, `TC-USR`, `TC-CLI`, `TC-TEC`, `TC-CAT`, `TC-SEC`, `TC-ATT` | `apps/api/tests/unit/db/`, `apps/api/tests/integration/auth/`, `apps/api/tests/integration/master-data/`, `apps/api/tests/security/` | Migración limpia, matriz de autorización/IDOR, reporte de integridad y cobertura de auth. |
 | **Jeremy Marquez** | `TC-RN`, `TC-SOL`, `TC-ASI`, `TC-AUD`, `TC-DASH` | `apps/api/tests/unit/domain/`, `apps/api/tests/integration/requests/`, `apps/api/tests/integration/assignments/`, `apps/api/tests/integration/dashboard/` | Suite de reglas, SLA, estados, asignaciones y dashboard; `EXPLAIN` de consultas críticas. |
-| **Cristhian Loor** | `TC-RN` (aceptación), `TC-SLA`, `TC-NOT`, `TC-SSE`, `TC-E2E`, `TC-CI`, `TC-DEP`, `TC-PERF` | `apps/api/tests/unit/domain/`, `apps/api/tests/integration/notifications/`, `apps/web/e2e/`, `.github/workflows/`, `tests/performance/` | Suite de reglas/SLA, pipeline en verde, E2E-01/02, SSE probado, despliegue reproducible y métricas de rendimiento. |
+| **Cristhian Loor** | `TC-RN` (aceptación), `TC-SLA`, `TC-NOT`, `TC-SSE`, `TC-E2E`, `TC-DEP`, `TC-PERF` | `apps/api/tests/unit/domain/`, `apps/api/tests/integration/notifications/`, `apps/web/e2e/`, `tests/performance/` | Suite de reglas/SLA, pruebas en verde, E2E-01/02, SSE probado, despliegue reproducible y métricas de rendimiento. |
 | **Neil Goyes** | `TC-FE`, `TC-UI`, `TC-CON`, `TC-ACC`, `TC-E2E` (soporte) | `apps/web/tests/components/`, `apps/web/tests/ui/`, `apps/web/tests/contract/`, `apps/web/e2e/` | Pruebas de componentes, formularios, rutas, SSE en UI, accesibilidad y capturas responsive. |
 
 ### 11.1. Casos mínimos por integrante
@@ -289,8 +288,7 @@ Cada integrante escribe, ejecuta y mantiene las pruebas de su dominio. La revisi
 - `TC-SLA-01/02`: calendario laboral, feriados, zona horaria y límites exactos (T-025).
 - `TC-NOT-01/02`: persistencia por evento, lectura, badge y no duplicados.
 - `TC-SSE-01/02`: autenticación del stream, reconexión, `Last-Event-ID` y aislamiento por usuario/rol.
-- `TC-E2E-01/02`: flujos completos de Playwright en CI.
-- `TC-CI-01`: lint, typecheck, test y build obligatorios en cada PR.
+- `TC-E2E-01/02`: flujos completos de Playwright en el entorno de verificación.
 - `TC-DEP-01/02`: `docker compose up`, healthcheck, migraciones, seed, backup/restore.
 - `TC-PERF-01/02`: dashboard p95 < 2 s con 10 000 solicitudes y 50 conexiones SSE.
 

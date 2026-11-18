@@ -298,7 +298,7 @@ Tipos permitidos: `application/pdf`, `image/png`, `image/jpeg`, `image/webp`.
 | `updated_by` | `UUID` | FK `users` |
 | `updated_at` | `TIMESTAMPTZ` | NOT NULL |
 
-Claves iniciales: `sla.critica.hours=4`, `sla.alta.hours=8`, `sla.media.hours=24`, `sla.baja.hours=72`, `work.calendar.start=08:00`, `work.calendar.end=17:00`, `technician.default.max_load=5`.
+Claves iniciales: `sla.critica.hours=4`, `sla.alta.hours=8`, `sla.media.hours=24`, `sla.baja.hours=72`, `work.calendar.start=08:00`, `work.calendar.end=17:00`, `work.calendar.lunch_start=13:00`, `work.calendar.lunch_end=14:00`, `technician.default.max_load=5`.
 
 ### 3.19. `holidays`
 

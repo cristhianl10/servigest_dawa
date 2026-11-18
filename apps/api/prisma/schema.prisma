@@ -1,0 +1,334 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Role {
+  id    Int    @id @db.SmallInt
+  code  String @unique @db.VarChar(20)
+  name  String @db.VarChar(60)
+  users User[]
+
+  @@map("roles")
+}
+
+model Client {
+  id              String           @id @default(uuid()) @db.Uuid
+  ruc             String           @unique @db.VarChar(13)
+  businessName    String           @map("business_name") @db.VarChar(160)
+  tradeName       String?          @map("trade_name") @db.VarChar(160)
+  email           String           @db.Citext
+  phone           String?          @db.VarChar(20)
+  address         String?          @db.Text
+  status          String           @default("ACTIVO") @db.VarChar(15)
+  createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  users           User[]
+  sites           ClientSite[]
+  serviceRequests ServiceRequest[]
+
+  @@map("clients")
+}
+
+model User {
+  id                  String               @id @default(uuid()) @db.Uuid
+  email               String               @unique @db.Citext
+  passwordHash        String               @map("password_hash") @db.Text
+  fullName            String               @map("full_name") @db.VarChar(120)
+  phone               String?              @db.VarChar(20)
+  roleId              Int                  @map("role_id") @db.SmallInt
+  clientId            String?              @map("client_id") @db.Uuid
+  status              String               @default("ACTIVO") @db.VarChar(15)
+  mustChangePassword  Boolean              @default(false) @map("must_change_password")
+  failedAttempts      Int                  @default(0) @map("failed_attempts") @db.SmallInt
+  lockedUntil         DateTime?            @map("locked_until") @db.Timestamptz
+  lastLoginAt         DateTime?            @map("last_login_at") @db.Timestamptz
+  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt           DateTime             @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  role                Role                 @relation(fields: [roleId], references: [id])
+  client              Client?              @relation(fields: [clientId], references: [id])
+  technician          Technician?
+  createdRequests     ServiceRequest[]     @relation("RequestCreator")
+  assignedRecords     RequestAssignment[]  @relation("Assigner")
+  historyRecords      RequestHistory[]
+  uploadedAttachments RequestAttachment[]
+  notifications       Notification[]
+  refreshTokens       RefreshToken[]
+  passwordResetTokens PasswordResetToken[]
+  updatedParameters   SystemParameter[]
+
+  @@index([roleId])
+  @@index([clientId])
+  @@index([status])
+  @@map("users")
+}
+
+model ClientSite {
+  id              String           @id @default(uuid()) @db.Uuid
+  clientId        String           @map("client_id") @db.Uuid
+  name            String           @db.VarChar(120)
+  address         String           @db.Text
+  city            String           @default("Guayaquil") @db.VarChar(80)
+  contactName     String?          @map("contact_name") @db.VarChar(120)
+  contactPhone    String?          @map("contact_phone") @db.VarChar(20)
+  status          String           @default("ACTIVA") @db.VarChar(15)
+  createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  client          Client           @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  assets          Asset[]
+  serviceRequests ServiceRequest[]
+
+  @@unique([clientId, name])
+  @@map("client_sites")
+}
+
+model Asset {
+  id              String           @id @default(uuid()) @db.Uuid
+  siteId          String           @map("site_id") @db.Uuid
+  code            String           @db.VarChar(40)
+  name            String           @db.VarChar(120)
+  assetType       String?          @map("asset_type") @db.VarChar(60)
+  serialNumber    String?          @map("serial_number") @db.VarChar(80)
+  status          String           @default("OPERATIVO") @db.VarChar(20)
+  createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  site            ClientSite       @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  serviceRequests ServiceRequest[]
+
+  @@unique([siteId, code])
+  @@map("assets")
+}
+
+model Technician {
+  id                String                 @id @default(uuid()) @db.Uuid
+  userId            String                 @unique @map("user_id") @db.Uuid
+  employeeCode      String                 @unique @map("employee_code") @db.VarChar(20)
+  availability      String                 @default("DISPONIBLE") @db.VarChar(20)
+  maxConcurrentLoad Int                    @default(5) @map("max_concurrent_load") @db.SmallInt
+  createdAt         DateTime               @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime               @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  user              User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  specialties       TechnicianSpecialty[]
+  assignments       RequestAssignment[]
+  assignedRequests  ServiceRequest[]       @relation("AssignedTechnician")
+
+  @@map("technicians")
+}
+
+model Specialty {
+  id           Int                    @id @default(autoincrement()) @db.SmallInt
+  code         String                 @unique @db.VarChar(30)
+  name         String                 @unique @db.VarChar(100)
+  description  String?                @db.Text
+  status       String                 @default("ACTIVA") @db.VarChar(15)
+  technicians  TechnicianSpecialty[]
+  categories   ServiceCategory[]
+
+  @@map("specialties")
+}
+
+model TechnicianSpecialty {
+  technicianId String     @map("technician_id") @db.Uuid
+  specialtyId  Int        @map("specialty_id") @db.SmallInt
+  level        String     @default("INTERMEDIO") @db.VarChar(15)
+  technician   Technician @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+  specialty    Specialty  @relation(fields: [specialtyId], references: [id], onDelete: Restrict)
+
+  @@id([technicianId, specialtyId])
+  @@map("technician_specialties")
+}
+
+model ServiceCategory {
+  id              Int              @id @default(autoincrement()) @db.SmallInt
+  code            String           @unique @db.VarChar(30)
+  name            String           @db.VarChar(120)
+  specialtyId     Int              @map("specialty_id") @db.SmallInt
+  defaultPriority String           @default("MEDIA") @map("default_priority") @db.VarChar(10)
+  status          String           @default("ACTIVA") @db.VarChar(15)
+  specialty       Specialty        @relation(fields: [specialtyId], references: [id], onDelete: Restrict)
+  serviceRequests ServiceRequest[]
+
+  @@map("service_categories")
+}
+
+model RequestStatus {
+  id              Int              @id @db.SmallInt
+  code            String           @unique @db.VarChar(20)
+  name            String           @db.VarChar(60)
+  isTerminal      Boolean          @default(false) @map("is_terminal")
+  sortOrder       Int              @map("sort_order") @db.SmallInt
+  serviceRequests ServiceRequest[]
+
+  @@map("request_statuses")
+}
+
+model RequestCodeSequence {
+  period    String @id @db.VarChar(6)
+  lastValue Int    @default(0) @map("last_value")
+
+  @@map("request_code_sequences")
+}
+
+model ServiceRequest {
+  id                   String              @id @default(uuid()) @db.Uuid
+  code                 String              @unique @db.VarChar(20)
+  clientId             String              @map("client_id") @db.Uuid
+  siteId               String              @map("site_id") @db.Uuid
+  assetId              String?             @map("asset_id") @db.Uuid
+  categoryId           Int                 @map("category_id") @db.SmallInt
+  priority             String              @db.VarChar(10)
+  statusId             Int                 @map("status_id") @db.SmallInt
+  description          String              @db.Text
+  resolution           String?             @db.Text
+  cancellationReason   String?             @map("cancellation_reason") @db.Text
+  createdBy            String              @map("created_by") @db.Uuid
+  assignedTechnicianId String?             @map("assigned_technician_id") @db.Uuid
+  dueAt                DateTime            @map("due_at") @db.Timestamptz
+  slaPausedMinutes     Int                 @default(0) @map("sla_paused_minutes")
+  pausedAt             DateTime?           @map("paused_at") @db.Timestamptz
+  approvedAt           DateTime?           @map("approved_at") @db.Timestamptz
+  assignedAt           DateTime?           @map("assigned_at") @db.Timestamptz
+  startedAt            DateTime?           @map("started_at") @db.Timestamptz
+  resolvedAt           DateTime?           @map("resolved_at") @db.Timestamptz
+  closedAt             DateTime?           @map("closed_at") @db.Timestamptz
+  version              Int                 @default(1)
+  createdAt            DateTime            @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt            DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  client               Client              @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  site                 ClientSite          @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  asset                Asset?              @relation(fields: [assetId], references: [id], onDelete: SetNull)
+  category             ServiceCategory     @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  status               RequestStatus       @relation(fields: [statusId], references: [id], onDelete: Restrict)
+  creator              User                @relation("RequestCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  assignedTechnician   Technician?         @relation("AssignedTechnician", fields: [assignedTechnicianId], references: [id], onDelete: SetNull)
+  assignments          RequestAssignment[]
+  history              RequestHistory[]
+  attachments          RequestAttachment[]
+  notifications        Notification[]
+
+  @@index([statusId])
+  @@index([priority])
+  @@index([clientId, createdAt(sort: Desc)])
+  @@index([assignedTechnicianId, statusId])
+  @@index([dueAt])
+  @@index([createdAt])
+  @@map("service_requests")
+}
+
+model RequestAssignment {
+  id           String         @id @default(uuid()) @db.Uuid
+  requestId    String         @map("request_id") @db.Uuid
+  technicianId String         @map("technician_id") @db.Uuid
+  assignedBy   String         @map("assigned_by") @db.Uuid
+  reason       String?        @db.Text
+  status       String         @default("VIGENTE") @db.VarChar(15)
+  assignedAt   DateTime       @default(now()) @map("assigned_at") @db.Timestamptz
+  endedAt      DateTime?      @map("ended_at") @db.Timestamptz
+
+  request      ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Restrict)
+  technician   Technician     @relation(fields: [technicianId], references: [id], onDelete: Restrict)
+  assigner     User           @relation("Assigner", fields: [assignedBy], references: [id], onDelete: Restrict)
+
+  @@map("request_assignments")
+}
+
+model RequestHistory {
+  id         BigInt         @id @default(autoincrement())
+  requestId  String         @map("request_id") @db.Uuid
+  actorId    String?        @map("actor_id") @db.Uuid
+  action     String         @db.VarChar(30)
+  fromStatus String?        @map("from_status") @db.VarChar(20)
+  toStatus   String?        @map("to_status") @db.VarChar(20)
+  comment    String?        @db.Text
+  metadata   Json?          @db.JsonB
+  createdAt  DateTime       @default(now()) @map("created_at") @db.Timestamptz
+
+  request    ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Restrict)
+  actor      User?          @relation(fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@index([requestId, createdAt])
+  @@map("request_history")
+}
+
+model RequestAttachment {
+  id         String         @id @default(uuid()) @db.Uuid
+  requestId  String         @map("request_id") @db.Uuid
+  uploadedBy String         @map("uploaded_by") @db.Uuid
+  fileName   String         @map("file_name") @db.VarChar(255)
+  mimeType   String         @map("mime_type") @db.VarChar(100)
+  sizeBytes  Int            @map("size_bytes")
+  storageKey String         @unique @map("storage_key") @db.Text
+  createdAt  DateTime       @default(now()) @map("created_at") @db.Timestamptz
+
+  request    ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  uploader   User           @relation(fields: [uploadedBy], references: [id], onDelete: Restrict)
+
+  @@map("request_attachments")
+}
+
+model Notification {
+  id        String          @id @default(uuid()) @db.Uuid
+  userId    String          @map("user_id") @db.Uuid
+  requestId String?         @map("request_id") @db.Uuid
+  type      String          @db.VarChar(40)
+  title     String          @db.VarChar(160)
+  body      String          @db.Text
+  readAt    DateTime?       @map("read_at") @db.Timestamptz
+  createdAt DateTime        @default(now()) @map("created_at") @db.Timestamptz
+
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  request   ServiceRequest? @relation(fields: [requestId], references: [id], onDelete: SetNull)
+
+  @@index([userId, readAt, createdAt(sort: Desc)])
+  @@map("notifications")
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash") @db.Text
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash") @db.Text
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz
+  usedAt    DateTime? @map("used_at") @db.Timestamptz
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
+}
+
+model SystemParameter {
+  key         String   @id @db.VarChar(60)
+  value       Json     @db.JsonB
+  description String?  @db.Text
+  updatedBy   String?  @map("updated_by") @db.Uuid
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  updater     User?    @relation(fields: [updatedBy], references: [id])
+
+  @@map("system_parameters")
+}
+
+model Holiday {
+  date DateTime @id @db.Date
+  name String   @db.VarChar(120)
+
+  @@map("holidays")
+}

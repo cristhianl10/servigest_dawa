@@ -98,7 +98,7 @@
 | NFR-SEG-02 | Pruebas de expiración, rotación y revocación | Integración auth |
 | NFR-SEG-03 | Matriz de autorización + IDOR | T-053 |
 | NFR-SEG-04 | Prueba de 6 intentos de login | Integración 429 |
-| NFR-SEG-05 | `.env` ignorado y escaneo en CI | Revisión de repo |
+| NFR-SEG-05 | `.env` ignorado y revisión manual antes de publicar | Revisión de repo |
 | NFR-SEG-06 | Pruebas de inyección, XSS y CORS | Checklist de seguridad |
 | NFR-PERF-01 | Seed 10 000 + medición p95 | Reporte de tiempos |
 | NFR-PERF-02 | Dashboard 12 meses | Reporte de tiempos |
@@ -108,7 +108,7 @@
 | NFR-USA-03 | Revisión de mensajes de error | Pruebas de integración |
 | NFR-REL-01 | Pruebas de transacción y rollback | TC-RN-07/08 |
 | NFR-REL-02 | `/health` con BD arriba/abajo | Integración |
-| NFR-MAN-01 | Lint, typecheck y cobertura en CI | Pipeline |
+| NFR-MAN-01 | Lint, typecheck y cobertura local | Reporte |
 | NFR-DOC-01 | OpenAPI generado y Swagger | Revisión |
 | NFR-PORT-01 | Instalación desde cero | Runbook |
 | NFR-OBS-01 | Logs con requestId y sin secretos | Revisión de logs |

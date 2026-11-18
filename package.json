@@ -1,0 +1,15 @@
+{
+  "name": "servigest-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "pnpm --filter @servigest/shared build && pnpm --filter @servigest/api build",
+    "dev:api": "pnpm --filter @servigest/api dev",
+    "test": "pnpm -r test",
+    "lint": "eslint .",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

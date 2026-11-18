@@ -469,7 +469,7 @@ Respuesta `200`:
 - Schemas reutilizados desde `packages/shared`.
 - Cada endpoint documenta: resumen, roles, parámetros, body, respuestas (incluidos errores) y ejemplo.
 - `securitySchemes.bearerAuth` (JWT) documentado.
-- El pipeline falla si el documento no se genera o si un endpoint carece de descripción.
+- La verificación de OpenAPI falla si el documento no se genera o si un endpoint carece de descripción.
 - Swagger UI disponible solo en desarrollo y en la demo; en producción se puede proteger con autenticación básica.
 
 ## 7. Ejemplo de flujo completo (contrato)

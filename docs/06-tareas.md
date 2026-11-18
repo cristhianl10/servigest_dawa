@@ -9,7 +9,7 @@
 | JAR | **Jared Ochoa** | Backend / Base de datos / Seguridad | Modelo, migraciones, auth, usuarios, catálogos, revisión de contratos API |
 | JER | **Jeremy Marquez** | Backend / Reglas de negocio | Solicitudes, máquina de estados, SLA, asignaciones, auditoría, dashboard SQL |
 | NEI | **Neil Goyes** | Frontend | Rutas, formularios, flujos, estados UI, accesibilidad, manual de usuario |
-| CRI | **Cristhian Loor** | Full stack / QA / DevOps | Notificaciones SSE, pruebas E2E, CI/CD, despliegue, manual técnico, informe y video |
+| CRI | **Cristhian Loor** | Full stack / QA / despliegue | Notificaciones SSE, pruebas E2E, despliegue, manual técnico, informe y video |
 
 > La asignación detallada por integrante, entidades, endpoints, contratos y handoffs está en [`11-plan-equipo.md`](11-plan-equipo.md). Todos revisan código de todos y deben poder explicar y modificar en vivo cualquier módulo (defensa individual de 3 puntos).
 
@@ -113,7 +113,7 @@ Cada tarea incluye: ID, requisito, descripción, criterio de aceptación, depend
 | T-053 | Matriz de autorización y pruebas IDOR | EP-08 | NFR-SEG-03 | JAR | 3 | T-052 |
 | T-054 | E2E-01 y E2E-02 con Playwright | EP-08 | § 5 de pruebas | NEI, CRI | 5 | T-033, T-034, T-037 |
 | T-055 | Verificación responsive y accesibilidad | EP-08 | NFR-USA-01/02 | NEI | 3 | T-031…T-035 |
-| T-056 | CI GitHub Actions (lint, typecheck, test, build) | EP-08 | NFR-MAN-01 | CRI | 3 | T-051 |
+| T-056 | Verificación local reproducible (lint, typecheck, test, build) | EP-08 | NFR-MAN-01 | CRI | 3 | T-051 |
 | T-057 | Despliegue de BD, API y web | EP-08 | NFR-PORT-01 | CRI | 5 | T-056 |
 | T-058 | Manual técnico, de despliegue y de usuario | EP-08 | Entregables | JAR, CRI, NEI | 3 | T-057 |
 | T-059 | Informe de pruebas y evidencias | EP-08 | Entregable 7 | CRI | 2 | T-051…T-055 |
@@ -155,7 +155,7 @@ gantt
 | **Jared (JAR)** | T-001…T-004, T-007, T-008, T-010 | T-011…T-020 | Revisión de contratos y apoyo API | T-049, T-050 | T-052, T-053, T-058 |
 | **Jeremy (JER)** | T-005 | T-021…T-024 | Apoyo API y cierre de contratos | T-036…T-041, T-045…T-047 | T-051, T-052 |
 | **Neil (NEI)** | T-006 | Apoyo UI y contratos | T-026…T-035 | T-044, T-048 | T-054, T-055, T-058 |
-| **Cristhian (CRI)** | T-009 | T-025 + CI inicial | Apoyo QA y SSE | T-042, T-043 | T-051, T-054, T-056, T-057, T-058, T-059, T-060 |
+| **Cristhian (CRI)** | T-009 | T-025 + verificación local inicial | Apoyo QA y SSE | T-042, T-043 | T-051, T-054, T-056, T-057, T-058, T-059, T-060 |
 
 **Regla de rotación:** cada integrante dedica al menos 20 % de su tiempo a revisar módulos ajenos y a preparar su defensa individual. La división detallada por entidad, endpoint y contrato está en [`11-plan-equipo.md`](11-plan-equipo.md).
 

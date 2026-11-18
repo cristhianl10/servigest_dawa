@@ -38,7 +38,7 @@ Construir la interfaz completa de ServiGest: shell, rutas por rol, autenticació
 - Frontend completo en `apps/web/`.
 - Estructura de `packages/shared` (solo yo la modifico); contenido de `auth.ts`, `clients.ts`, `requests.ts`, `notifications.ts`, `dashboard.ts` lo aportan los dueños de cada dominio.
 - Manual de usuario.
-- No soy dueño de: BD, migraciones, lógica de dominio, SSE backend, OpenAPI ni pipeline.
+- No soy dueño de: BD, migraciones, lógica de dominio, SSE backend ni OpenAPI.
 
 ### 3.3. Archivos y carpetas
 

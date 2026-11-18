@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+exec node /home/Cristhian/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/pnpm/bin/pnpm.mjs "$@"

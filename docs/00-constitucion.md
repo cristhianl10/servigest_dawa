@@ -50,7 +50,6 @@
 | Base de datos | PostgreSQL 16 |
 | Migraciones | Prisma Migrate (`prisma migrate deploy` en despliegue) |
 | Contenedores | Docker + Docker Compose |
-| CI | GitHub Actions (lint, typecheck, test, build) |
 | Despliegue | API en Render/Railway/Fly.io; web estática en Vercel/Netlify; PostgreSQL gestionado |
 
 > **ADR-001:** se elige Express sobre NestJS para mantener el proyecto comprensible y defendible por los cuatro integrantes, aplicando una separación de capas explícita (routes → controllers → services → repositories). Ver `03-arquitectura.md`.
@@ -112,8 +111,9 @@ Reglas:
 
 | Rama | Uso |
 | :--- | :--- |
-| `main` | Siempre desplegable; protegida. |
-| `feat/<tarea>-<descripcion>` | Funcionalidades. |
+| `master` | Rama default, siempre desplegable; protegida. |
+| `dev/<integrante>` | Rama personal de cada integrante; PR a `master`. |
+| `feat/<tarea>-<descripcion>` | Funcionalidades grandes (opcional). |
 | `fix/<tarea>-<descripcion>` | Correcciones. |
 | `docs/<descripcion>` | Documentación. |
 
@@ -125,7 +125,7 @@ test(rn-04): impedir retroceso de solicitud cerrada [T-048]
 docs(api): documentar reapertura auditada [T-010]
 ```
 
-Tipos permitidos: `feat`, `fix`, `test`, `docs`, `refactor`, `chore`, `ci`, `perf`.
+Tipos permitidos: `feat`, `fix`, `test`, `docs`, `refactor`, `chore`, `perf`.
 
 ### 4.4. Calidad
 
@@ -141,7 +141,7 @@ Una tarea se considera terminada cuando:
 1. El código respeta las capas y convenciones.
 2. Está vinculada a un `RF-*`/`RN-*` y su contrato API está actualizado.
 3. Tiene pruebas automatizadas del camino positivo y al menos un negativo cuando aplica.
-4. Pasa `lint`, `typecheck`, pruebas y build en local y en CI.
+4. Pasa `lint`, `typecheck`, pruebas y build en local.
 5. No introduce datos sensibles en logs ni respuestas.
 6. La documentación afectada (spec, API, modelo, manual) está actualizada.
 7. Fue revisada por al menos otro integrante (pull request aprobado).
@@ -165,7 +165,7 @@ Una tarea se considera terminada cuando:
 | Diferencias entre ambientes | Medio | Docker, `.env.example` y migraciones versionadas. |
 | Pérdida de trazabilidad individual | Alto | Ramas por tarea, commits con ID y bitácora de aportes en `06-tareas.md`. |
 | Dependencia de un solo integrante | Alto | Rotación de revisores y sesiones de defensa interna semanales. |
-| Fuga de secretos | Alto | `.gitignore`, escaneo en CI y rotación de credenciales. |
+| Fuga de secretos | Alto | `.gitignore`, revisión manual antes de publicar y rotación de credenciales. |
 
 ## 8. Política de cambios
 

@@ -22,7 +22,7 @@ Ningún eslabón se salta. Si cambia un eslabón, se actualizan todos en el mism
 | :--- | :-: | :--- | :--- | :--- | :--- | :--- |
 | **Jared Ochoa** | JAR | Base de datos | Dueño de datos / Backend core / Seguridad | Modelo, migraciones, auth, usuarios, clientes, técnicos, catálogos, adjuntos, OpenAPI base | `dev/jared` | [01-jared-ochoa.md](equipo/01-jared-ochoa.md) |
 | **Jeremy Marquez** | JER | Lógica y reglas | Backend de dominio | Solicitudes, máquina de estados, SLA, asignaciones, auditoría, dashboard SQL | `dev/jeremy` | [02-jeremy-marquez.md](equipo/02-jeremy-marquez.md) |
-| **Cristhian Loor** | CRI | Integración y pruebas | Full stack / QA / DevOps | SSE backend, E2E, CI/CD, despliegue, informe de pruebas, video | `dev/cristhian` | [03-cristhian-loor.md](equipo/03-cristhian-loor.md) |
+| **Cristhian Loor** | CRI | Integración y pruebas | Full stack / QA / despliegue | SSE backend, E2E, verificación local, despliegue, informe de pruebas, video | `dev/cristhian` | [03-cristhian-loor.md](equipo/03-cristhian-loor.md) |
 | **Neil Goyes** | NEI | Frontend | Frontend | Shell, rutas, formularios, solicitudes, UI de técnico, dashboard UI, accesibilidad, manual de usuario | `dev/neil` | [04-neil-goyes.md](equipo/04-neil-goyes.md) |
 
 **Regla de revisión:** nadie aprueba su propio PR. Los cambios de esquema o contrato requieren **dos revisores**: el dueño del artefacto y un consumidor.
@@ -47,19 +47,19 @@ Ningún eslabón se salta. Si cambia un eslabón, se actualizan todos en el mism
 | Pruebas unitarias de reglas | `apps/api/tests/unit/` | Jeremy | Cristhian | — |
 | Pruebas de integración | `apps/api/tests/integration/` | Dueño del módulo | Jared (auth/master data) o Jeremy (dominio) | Cristhian |
 | E2E | `apps/web/e2e/` | Cristhian | Neil | — |
-| CI/CD y despliegue | `.github/workflows/` + `docker-compose.yml` | Cristhian | Jared | Todos |
+| Despliegue y verificación local | `docker-compose.yml` + `Dockerfile` | Cristhian | Jared | Todos |
 | Manual técnico | `docs/08-despliegue.md` + `docs/07-implementacion.md` | Jared / Cristhian | Jeremy | Neil |
 | Manual de usuario | `docs/09-manual-usuario.md` | Neil | Jared | — |
 | Trazabilidad | `docs/10-trazabilidad.md` | Jared | Jeremy | Todos |
 
 ### 3.1. Reglas de edición
 
-1. **Solo Jared** ejecuta `prisma migrate dev` y mergea migraciones a `develop`. Jeremy puede proponer cambios al `schema.prisma` en su rama, pero la migración la genera y revisa Jared.
+1. **Solo Jared** ejecuta `prisma migrate dev` y mergea migraciones a `master`. Jeremy puede proponer cambios al `schema.prisma` en su rama, pero la migración la genera y revisa Jared.
 2. **Solo Neil** modifica la estructura de `packages/shared`; cada dueño de dominio agrega sus esquemas en su archivo (`requests.ts`, `notifications.ts`, etc.). Jared revisa nombres de BD y Jeremy revisa enums de dominio.
-3. **Solo Jared** publica el OpenAPI consolidado. Cada dueño documenta sus rutas; el CI falla si una ruta no tiene descripción.
+3. **Solo Jared** publica el OpenAPI consolidado. Cada dueño documenta sus rutas; la verificación de OpenAPI falla si una ruta no tiene descripción.
 4. **Nadie** define tipos manuales en el frontend para datos que vienen de la API; se importan de `packages/shared`.
 5. **Nadie** escribe SQL fuera de `dashboard`; el SQL del dashboard lo escribe Jeremy y lo revisa Jared.
-6. **Nadie** hace push directo a `develop` ni a `main`; todo va por PR.
+6. **Nadie** hace push directo a `master`; todo va por PR.
 7. **Nadie** cambia un nombre canónico sin actualizar el diccionario y avisar en la reunión de contratos.
 
 ## 4. Diccionario canónico
@@ -202,9 +202,9 @@ Catálogo completo con HTTP y significado en [`04-contratos-api.md § 5`](04-con
 | 5.4 Asignación y seguimiento | Jeremy | Jared (DB), Neil (UI) | RF-ASI-01…03, RN-01…08 | `request_assignments`, `request_history` | `/solicitudes/:id/asignaciones`, `/solicitudes/:id/historial` | Asignación, reasignación, timeline | TC-ASI, TC-AUD, TC-RN |
 | 5.5 Notificaciones e interacción dinámica | Cristhian | Jeremy (eventos), Neil (UI) | RF-NOT-01…03 | `notifications` | `/notificaciones/*`, `/notificaciones/stream` | Campana, toasts, badge | TC-NOT, TC-SSE |
 | 5.6 Dashboard y reportes | Jeremy (SQL/API) + Neil (UI) | Jared (índices), Cristhian (pruebas) | RF-DASH-01…03 | `service_requests`, `request_assignments`, `request_history` | `/dashboard/*` | Dashboard y “Mi resumen” | TC-DASH, TC-PERF |
-| Transversal: arquitectura y DB | Jared | Todos | NFR-PORT-01, NFR-REL-01 | Todas | `/health`, `/docs` | — | TC-DB, TC-CI |
+| Transversal: arquitectura y DB | Jared | Todos | NFR-PORT-01, NFR-REL-01 | Todas | `/health`, `/docs` | — | TC-DB |
 | Transversal: frontend | Neil | Todos | NFR-USA-01/02 | — | — | Todas | TC-FE, TC-UI |
-| Transversal: pruebas, CI/CD y despliegue | Cristhian | Todos | NFR-* | — | — | — | TC-E2E, TC-CI, TC-DEP |
+| Transversal: pruebas y despliegue | Cristhian | Todos | NFR-* | — | — | — | TC-E2E, TC-DEP |
 
 ## 6. Resumen de carga por integrante
 
@@ -212,7 +212,7 @@ Catálogo completo con HTTP y significado en [`04-contratos-api.md § 5`](04-con
 | :--- | :--- | :--- | :--- | :--- |
 | **Jared Ochoa** | 5.1, 5.2, DB, seguridad | T-001…T-004, T-007, T-008, T-010…T-020, T-049, T-050, T-052, T-053, T-058 | TC-DB, TC-AUTH, TC-USR, TC-CLI, TC-TEC, TC-CAT, TC-SEC, TC-ATT | [01-jared-ochoa.md](equipo/01-jared-ochoa.md) |
 | **Jeremy Marquez** | 5.3, 5.4, 5.6 SQL | T-005, T-021…T-024, T-036…T-041, T-045…T-047, T-051, T-052 | TC-RN, TC-SOL, TC-ASI, TC-AUD, TC-DASH | [02-jeremy-marquez.md](equipo/02-jeremy-marquez.md) |
-| **Cristhian Loor** | 5.5, QA, CI/CD, despliegue | T-009, T-025, T-042, T-043, T-051, T-054, T-056, T-057, T-058, T-059, T-060 | TC-RN (aceptación), TC-SLA, TC-NOT, TC-SSE, TC-E2E, TC-CI, TC-DEP, TC-PERF | [03-cristhian-loor.md](equipo/03-cristhian-loor.md) |
+| **Cristhian Loor** | 5.5, QA, despliegue | T-009, T-025, T-042, T-043, T-051, T-054, T-056, T-057, T-058, T-059, T-060 | TC-RN (aceptación), TC-SLA, TC-NOT, TC-SSE, TC-E2E, TC-DEP, TC-PERF | [03-cristhian-loor.md](equipo/03-cristhian-loor.md) |
 | **Neil Goyes** | Frontend completo, 5.6 UI | T-006, T-026…T-035, T-044, T-048, T-054, T-055, T-058 | TC-FE, TC-UI, TC-CON, TC-E2E | [04-neil-goyes.md](equipo/04-neil-goyes.md) |
 
 ## 7. Matriz RACI
@@ -237,7 +237,7 @@ Catálogo completo con HTTP y significado en [`04-contratos-api.md § 5`](04-con
 | Pruebas de integración auth/master data | A/R | C | C | I |
 | Pruebas de integración dominio | C | A/R | C | I |
 | E2E | I | C | A/R | R |
-| CI/CD y despliegue | C | I | A/R | I |
+| Despliegue y verificación local | C | I | A/R | I |
 | Manual técnico | A/R | C | R | I |
 | Manual de usuario | C | I | I | A/R |
 | Informe de pruebas | C | C | A/R | C |
@@ -248,9 +248,9 @@ Catálogo completo con HTTP y significado en [`04-contratos-api.md § 5`](04-con
 ### 8.1. Base de datos → backend
 
 - Jared mantiene `schema.prisma` y genera migraciones.
-- Jeremy propone cambios de entidades transaccionales en su rama; **no** ejecuta migraciones contra `develop`.
+- Jeremy propone cambios de entidades transaccionales en su rama; **no** ejecuta migraciones contra `master`.
 - Antes de mergear: `prisma validate`, `prisma format`, migración reproducible y actualización de [`02-modelo-dominio.md`](02-modelo-dominio.md).
-- Prohibido `db push` en `develop` o `main`.
+- Prohibido `db push` en `master`.
 
 ### 8.2. Backend → frontend
 
@@ -296,7 +296,7 @@ Catálogo completo con HTTP y significado en [`04-contratos-api.md § 5`](04-con
 
 - **Lunes 30 min:** planificación semanal y revisión de tablero.
 - **Miércoles 15 min:** sincronización de contratos y bloqueos.
-- **Viernes 30 min:** demo de lo integrado y merge a `develop`.
+- **Viernes 30 min:** demo de lo integrado y merge a `master`.
 - **Canal único:** decisiones y cambios de contrato se escriben en el canal del equipo, no solo en chats privados.
 
 ## 10. Git y revisión
@@ -304,8 +304,7 @@ Catálogo completo con HTTP y significado en [`04-contratos-api.md § 5`](04-con
 ### 10.1. Ramas
 
 ```
-main          ← entrega final / demo estable
-develop       ← integración continua
+master        ← rama default / entrega estable
 dev/jared
 dev/cristhian
 dev/jeremy
@@ -313,9 +312,9 @@ dev/neil
 feat/T-###-<descripcion>  ← opcional para tareas grandes
 ```
 
-- `main` y `develop` protegidas: sin push directo.
-- Cada integrante trabaja en su rama y abre PR a `develop`.
-- Al cierre de hitos, `develop` se mergea a `main` con PR revisado.
+- `master` protegida: sin push directo.
+- Cada integrante trabaja en su rama y abre PR a `master`.
+- Los PR aprobados se integran a `master`.
 
 ### 10.2. Commits
 
@@ -332,7 +331,7 @@ feat(db): agregar índice de vencimiento [T-003]
 feat(solicitudes): implementar transición a resuelta [T-037]
 test(rn-04): cubrir reapertura sin motivo [T-051]
 feat(web): construir timeline de historial [T-032]
-ci: ejecutar E2E en pull request [T-056]
+test(e2e): cubrir flujo de asignación [T-054]
 ```
 
 ### 10.3. Pull requests
@@ -341,7 +340,7 @@ ci: ejecutar E2E en pull request [T-056]
 - Descripción: qué cambia, cómo se probó y qué contrato se actualizó.
 - Revisor: uno distinto del autor.
 - Cambios de esquema/contrato: dos revisores (Jared + consumidor).
-- CI en verde obligatorio.
+- Verificación local en verde obligatoria.
 - Sin `console.log`, sin secretos, sin TODOs sin tarea.
 
 ## 11. Pruebas y evidencias por dueño
@@ -350,7 +349,7 @@ ci: ejecutar E2E en pull request [T-056]
 | :--- | :--- | :--- |
 | **Jared** | Migraciones, seed, integridad, unicidad, auth, refresh, recuperación, usuarios, clientes, técnicos, catálogos, adjuntos, autorización/IDOR, rate limit, CORS, OpenAPI. | Reporte de integración + matriz de autorización + logs de migración. |
 | **Jeremy** | RN-01…RN-08, SLA (7 casos), solicitudes, asignaciones, reapertura, historial, dashboard SQL, concurrencia, rendimiento de listados. | Reporte unitario + integración + cobertura + `EXPLAIN` de consultas. |
-| **Cristhian** | Notificaciones, SSE, E2E-01/E2E-02, CI, despliegue, healthcheck, backup/restore, rendimiento de dashboard, seguridad de cabeceras. | Pipeline en verde + URL desplegada + informe de pruebas + video. |
+| **Cristhian** | Notificaciones, SSE, E2E-01/E2E-02, verificación local, despliegue, healthcheck, backup/restore, rendimiento de dashboard, seguridad de cabeceras. | Suite de pruebas en verde + URL desplegada + informe de pruebas + video. |
 | **Neil** | Componentes, formularios, rutas protegidas, estados de carga/error/vacío, responsive, accesibilidad, SSE en UI, dashboard UI. | Pruebas de componentes + capturas + Lighthouse + checklist. |
 
 > El detalle de cada caso (`TC-*`), sus pasos y su criterio de aceptación está en los documentos específicos de cada integrante y en [`05-pruebas.md`](05-pruebas.md). No se acepta una regla sin prueba.
@@ -384,7 +383,7 @@ Cada uno ensaya al menos una vez el flujo completo del otro antes de la entrega.
 6. **Sin SQL fuera del dashboard.** Y el del dashboard lo revisa Jared.
 7. **Sin datos mock en la demo final.** Todo pasa por API y persistencia real.
 8. **Sin migraciones paralelas.** Solo Jared genera/mergea migraciones.
-9. **Sin push directo a `develop`/`main`.** Todo por PR con CI.
+9. **Sin push directo a `master`.** Todo por PR con revisión y verificación local.
 10. **Sin cambios silenciosos.** Todo cambio de contrato se anuncia en la reunión del miércoles y se registra en el PR.
 11. **Sin “lo arreglo en el frontend”.** Las reglas de negocio viven en el backend.
 12. **Sin fechas locales ambiguas.** ISO 8601 con offset; el backend calcula el SLA.
@@ -393,7 +392,7 @@ Cada uno ensaya al menos una vez el flujo completo del otro antes de la entrega.
 
 - [ ] Clonar el repo y leer [`00-constitucion.md`](00-constitucion.md), [`01-especificacion.md`](01-especificacion.md) y [`03-arquitectura.md`](03-arquitectura.md).
 - [ ] Leer su documento específico en [`equipo/`](equipo/README.md).
-- [ ] Crear su rama `dev/<nombre>` desde `develop`.
+- [ ] Crear su rama `dev/<nombre>` desde `master`.
 - [ ] Verificar `pnpm install`, `docker compose up -d db`, migraciones y seed.
 - [ ] Revisar el diccionario canónico y los contratos de su módulo.
 - [ ] Identificar sus tareas `T-*` y sus requisitos `RF-*`/`RN-*`.

@@ -14,7 +14,7 @@ pnpm --filter api dev
 pnpm --filter web dev
 ```
 
-Orden de construcción en CI: `packages/shared` → `apps/api` → `apps/web`.
+Orden de construcción y verificación local: `packages/shared` → `apps/api` → `apps/web`.
 
 ## 2. Módulo de autenticación
 

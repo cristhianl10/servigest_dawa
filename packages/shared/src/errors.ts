@@ -1,0 +1,61 @@
+export const ERROR_CODES = {
+  // Autenticación y Autorización
+  CREDENCIALES_INVALIDAS: 'CREDENCIALES_INVALIDAS',
+  USUARIO_INACTIVO: 'USUARIO_INACTIVO',
+  DEMASIADOS_INTENTOS: 'DEMASIADOS_INTENTOS',
+  TOKEN_INVALIDO: 'TOKEN_INVALIDO',
+  REFRESH_INVALIDO: 'REFRESH_INVALIDO',
+  SIN_PERMISO: 'SIN_PERMISO',
+  SIN_ASIGNACION: 'SIN_ASIGNACION',
+  
+  // Recursos y Validación
+  RECURSO_NO_ENCONTRADO: 'RECURSO_NO_ENCONTRADO',
+  VALIDACION_FALLIDA: 'VALIDACION_FALLIDA',
+  RANGO_INVALIDO: 'RANGO_INVALIDO',
+  PASSWORD_DEBIL: 'PASSWORD_DEBIL',
+  SEDE_NO_ENCONTRADA: 'SEDE_NO_ENCONTRADA',
+  CATEGORIA_INVALIDA: 'CATEGORIA_INVALIDA',
+  SEDE_NO_PERTENECE_AL_CLIENTE: 'SEDE_NO_PERTENECE_AL_CLIENTE',
+  EQUIPO_INVALIDO: 'EQUIPO_INVALIDO',
+
+  // Reglas de Negocio y Transiciones
+  TRANSICION_INVALIDA: 'TRANSICION_INVALIDA',
+  SOLICITUD_CERRADA: 'SOLICITUD_CERRADA',
+  CONFLICTO_VERSION: 'CONFLICTO_VERSION',
+  RESOLUCION_REQUERIDA: 'RESOLUCION_REQUERIDA',
+  MOTIVO_REQUERIDO: 'MOTIVO_REQUERIDO',
+  ESPECIALIDAD_INCOMPATIBLE: 'ESPECIALIDAD_INCOMPATIBLE',
+  TECNICO_NO_DISPONIBLE: 'TECNICO_NO_DISPONIBLE',
+  CARGA_EXCEDIDA: 'CARGA_EXCEDIDA',
+  ASIGNACION_VIGENTE: 'ASIGNACION_VIGENTE',
+  ENTIDAD_EN_USO: 'ENTIDAD_EN_USO',
+
+  // Servidor
+  ERROR_INTERNO: 'ERROR_INTERNO',
+} as const;
+
+export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
+
+export interface ApiErrorDetail {
+  field?: string;
+  issue: string;
+}
+
+export interface ApiErrorResponse {
+  error: {
+    code: ErrorCode | string;
+    message: string;
+    details?: ApiErrorDetail[];
+    requestId?: string;
+  };
+}
+
+export interface ApiSuccessResponse<T> {
+  data: T;
+  meta?: {
+    page?: number;
+    pageSize?: number;
+    total?: number;
+    totalPages?: number;
+  };
+}

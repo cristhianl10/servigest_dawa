@@ -63,7 +63,7 @@ No soy dueño de: `service_requests`, `request_statuses`, `request_code_sequence
 
 ### 4.1. Tareas compartidas
 
-- **T-052 Suite de integración:** yo cubro auth, usuarios y master data; Jeremy cubre dominio. Cristhian revisa que el pipeline la ejecute.
+- **T-052 Suite de integración:** yo cubro auth, usuarios y master data; Jeremy cubre dominio. Cristhian revisa que la verificación local la ejecute.
 - **T-058 Manual técnico:** yo escribo la sección de modelo de datos, migraciones, seed y operación de BD; Cristhian escribe despliegue; Neil escribe manual de usuario.
 
 ## 5. Pruebas que debo escribir y ejecutar
