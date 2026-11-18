@@ -1,4 +1,4 @@
-import type { Role } from '@servigest/shared';
+import type { Role, UpdateProfileDto } from '@servigest/shared';
 import { DomainError } from '../../domain/errors/domain-error.ts';
 import { CryptoUtil } from './crypto.util.ts';
 
@@ -26,6 +26,14 @@ export interface RefreshTokenRecord {
   revokedAt?: Date | null;
 }
 
+export interface PasswordResetTokenRecord {
+  id: string;
+  userId: string;
+  tokenHash: string;
+  expiresAt: Date;
+  usedAt?: Date | null;
+}
+
 export interface IAuthRepository {
   findUserByEmail(email: string): Promise<AuthUserRecord | null>;
   findUserById(id: string): Promise<AuthUserRecord | null>;
@@ -35,6 +43,15 @@ export interface IAuthRepository {
   findRefreshToken(tokenHash: string): Promise<RefreshTokenRecord | null>;
   revokeRefreshToken(tokenHash: string): Promise<void>;
   revokeAllUserRefreshTokens(userId: string): Promise<void>;
+  updateProfile(userId: string, input: UpdateProfileDto): Promise<AuthUserRecord>;
+  updatePassword(userId: string, passwordHash: string): Promise<void>;
+  createPasswordResetToken(userId: string, tokenHash: string, expiresAt: Date): Promise<void>;
+  findPasswordResetToken(tokenHash: string): Promise<PasswordResetTokenRecord | null>;
+  markPasswordResetTokenUsed(id: string): Promise<void>;
+}
+
+export interface AuthServiceOptions {
+  onPasswordResetRequested?: (email: string, rawToken: string) => Promise<void> | void;
 }
 
 export interface LoginResult {
@@ -59,9 +76,11 @@ export interface RefreshResult {
 
 export class AuthService {
   private readonly repository: IAuthRepository;
+  private readonly onPasswordResetRequested?: AuthServiceOptions['onPasswordResetRequested'];
 
-  constructor(repository: IAuthRepository) {
+  constructor(repository: IAuthRepository, options: AuthServiceOptions = {}) {
     this.repository = repository;
+    this.onPasswordResetRequested = options.onPasswordResetRequested;
   }
 
   public async login(email: string, password: string): Promise<LoginResult> {
@@ -192,5 +211,76 @@ export class AuthService {
       throw new DomainError('RECURSO_NO_ENCONTRADO', 404, 'Usuario no encontrado.');
     }
     return user;
+  }
+
+  public async updateProfile(userId: string, input: UpdateProfileDto): Promise<AuthUserRecord> {
+    const user = await this.repository.findUserById(userId);
+    if (!user) {
+      throw new DomainError('RECURSO_NO_ENCONTRADO', 404, 'Usuario no encontrado.');
+    }
+    if (user.status !== 'ACTIVO') {
+      throw new DomainError('USUARIO_INACTIVO', 403, 'El usuario no está activo.');
+    }
+    return this.repository.updateProfile(userId, input);
+  }
+
+  public async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string
+  ): Promise<void> {
+    const user = await this.repository.findUserById(userId);
+    if (!user) {
+      throw new DomainError('RECURSO_NO_ENCONTRADO', 404, 'Usuario no encontrado.');
+    }
+    if (user.status !== 'ACTIVO') {
+      throw new DomainError('USUARIO_INACTIVO', 403, 'El usuario no está activo.');
+    }
+
+    const isValid = await CryptoUtil.verifyPassword(currentPassword, user.passwordHash);
+    if (!isValid) {
+      throw new DomainError('CREDENCIALES_INVALIDAS', 401, 'La contraseña actual no es válida.');
+    }
+
+    const passwordHash = await CryptoUtil.hashPassword(newPassword);
+    await this.repository.updatePassword(userId, passwordHash);
+    await this.repository.revokeAllUserRefreshTokens(userId);
+  }
+
+  public async forgotPassword(email: string): Promise<void> {
+    const user = await this.repository.findUserByEmail(email.trim().toLowerCase());
+    if (!user || user.status !== 'ACTIVO') {
+      return;
+    }
+
+    const { raw, hash } = CryptoUtil.generateRefreshToken();
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+    await this.repository.createPasswordResetToken(user.id, hash, expiresAt);
+
+    if (this.onPasswordResetRequested) {
+      try {
+        await this.onPasswordResetRequested(user.email, raw);
+      } catch {
+        // El envío de correo no debe revelar si el correo existe ni romper la respuesta 202.
+      }
+    }
+  }
+
+  public async resetPassword(rawToken: string, newPassword: string): Promise<void> {
+    const hash = CryptoUtil.sha256(rawToken);
+    const record = await this.repository.findPasswordResetToken(hash);
+    if (!record || record.usedAt || record.expiresAt.getTime() <= Date.now()) {
+      throw new DomainError('TOKEN_INVALIDO', 400, 'El token de recuperación no es válido o expiró.');
+    }
+
+    const user = await this.repository.findUserById(record.userId);
+    if (!user || user.status !== 'ACTIVO') {
+      throw new DomainError('USUARIO_INACTIVO', 403, 'El usuario no está activo.');
+    }
+
+    const passwordHash = await CryptoUtil.hashPassword(newPassword);
+    await this.repository.updatePassword(user.id, passwordHash);
+    await this.repository.markPasswordResetTokenUsed(record.id);
+    await this.repository.revokeAllUserRefreshTokens(user.id);
   }
 }

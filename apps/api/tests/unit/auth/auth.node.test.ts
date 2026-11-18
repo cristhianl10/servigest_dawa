@@ -35,9 +35,20 @@ describe('Módulo de Seguridad y Autenticación (TC-AUTH / RF-AUTH / NFR-SEG)', 
     };
 
     const repository = new InMemoryAuthRepository([testUser, inactiveUser]);
-    const service = new AuthService(repository);
+    let resetToken: string | null = null;
+    const service = new AuthService(repository, {
+      onPasswordResetRequested: (_email, token) => {
+        resetToken = token;
+      },
+    });
 
-    return { repository, service, testUser, inactiveUser };
+    return {
+      repository,
+      service,
+      testUser,
+      inactiveUser,
+      getResetToken: () => resetToken,
+    };
   }
 
   it('TC-AUTH-01: login exitoso con credenciales válidas genera JWT y refresh token', async () => {
@@ -129,6 +140,75 @@ describe('Módulo de Seguridad y Autenticación (TC-AUTH / RF-AUTH / NFR-SEG)', 
       async () => service.refresh(loginRes.refreshToken),
       (err: any) => err instanceof DomainError && err.code === 'REFRESH_INVALIDO' && err.httpStatus === 401
     );
+  });
+
+  it('TC-AUTH-09: forgot-password genera token de un uso sin revelar si el correo existe', async () => {
+    const { service, repository, getResetToken } = await createFixture();
+
+    await service.forgotPassword('coordinador@servigest.ec');
+    const token = getResetToken();
+    assert.ok(token && token.length > 20);
+
+    const record = await repository.findPasswordResetToken(CryptoUtil.sha256(token!));
+    assert.ok(record);
+    assert.strictEqual(record?.userId, 'usr-1');
+
+    let unknownCalled = false;
+    const unknownRepo = new InMemoryAuthRepository();
+    const unknownService = new AuthService(unknownRepo, {
+      onPasswordResetRequested: () => {
+        unknownCalled = true;
+      },
+    });
+    await unknownService.forgotPassword('nadie@servigest.ec');
+    assert.strictEqual(unknownCalled, false);
+  });
+
+  it('TC-AUTH-10: reset-password actualiza la contraseña, invalida sesiones y el token', async () => {
+    const { service, repository, getResetToken } = await createFixture();
+    const loginRes = await service.login('coordinador@servigest.ec', 'ServiGest2026*');
+
+    await service.forgotPassword('coordinador@servigest.ec');
+    const token = getResetToken()!;
+    await service.resetPassword(token, 'NuevaClave2026*');
+
+    const oldSession = await repository.findRefreshToken(
+      CryptoUtil.sha256(loginRes.refreshToken)
+    );
+    assert.ok(oldSession?.revokedAt);
+
+    const loginRes2 = await service.login('coordinador@servigest.ec', 'NuevaClave2026*');
+    assert.ok(loginRes2.accessToken.length > 20);
+
+    await assert.rejects(
+      async () => service.resetPassword(token, 'OtraClave2026*'),
+      (err: any) => err instanceof DomainError && err.code === 'TOKEN_INVALIDO'
+    );
+  });
+
+  it('TC-AUTH-11: cambio de contraseña autenticado exige la contraseña actual', async () => {
+    const { service } = await createFixture();
+
+    await assert.rejects(
+      async () => service.changePassword('usr-1', 'Incorrecta2026*', 'NuevaClave2026*'),
+      (err: any) => err instanceof DomainError && err.code === 'CREDENCIALES_INVALIDAS'
+    );
+
+    await service.changePassword('usr-1', 'ServiGest2026*', 'NuevaClave2026*');
+    const loginRes = await service.login('coordinador@servigest.ec', 'NuevaClave2026*');
+    assert.strictEqual(loginRes.user.email, 'coordinador@servigest.ec');
+  });
+
+  it('TC-AUTH-12: actualización de perfil propio cambia nombre y teléfono', async () => {
+    const { service } = await createFixture();
+
+    const updated = await service.updateProfile('usr-1', {
+      fullName: 'Ana Torres Actualizada',
+      phone: '0991234567',
+    });
+
+    assert.strictEqual(updated.fullName, 'Ana Torres Actualizada');
+    assert.strictEqual(updated.phone, '0991234567');
   });
 
   it('TC-AUTH-08: logout revoca el refresh token', async () => {

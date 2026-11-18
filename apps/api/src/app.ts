@@ -7,6 +7,7 @@ import { healthRouter } from './presentation/routes/health.routes.ts';
 import { notificationsRouter } from './presentation/routes/notifications.routes.ts';
 import { authRouter } from './modules/auth/auth.routes.ts';
 import { requestsRouter } from './modules/requests/requests.routes.ts';
+import { rolesRouter, usersRouter } from './modules/users/users.routes.ts';
 
 export function createApp(): Express {
   const app = express();
@@ -30,6 +31,8 @@ export function createApp(): Express {
   // Registro de Rutas
   app.use('/api/health', healthRouter);
   app.use('/api/auth', authRouter);
+  app.use('/api/usuarios', usersRouter);
+  app.use('/api/roles', rolesRouter);
   app.use('/api/solicitudes', requestsRouter);
   app.use('/api/notificaciones', notificationsRouter);
 

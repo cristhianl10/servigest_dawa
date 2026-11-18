@@ -1,6 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { AuthService } from './auth.service.ts';
-import { loginDtoSchema } from '@servigest/shared';
+import {
+  changePasswordDtoSchema,
+  forgotPasswordDtoSchema,
+  loginDtoSchema,
+  resetPasswordDtoSchema,
+  updateProfileDtoSchema,
+} from '@servigest/shared';
 
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -72,20 +78,82 @@ export class AuthController {
     try {
       const currentUser = res.locals.user;
       const user = await this.authService.getMe(currentUser.id);
+      res.status(200).json({ data: this.toProfile(user) });
+    } catch (err) {
+      next(err);
+    }
+  };
 
-      res.status(200).json({
-        data: {
-          id: user.id,
-          email: user.email,
-          fullName: user.fullName,
-          role: user.role,
-          phone: user.phone ?? null,
-          clientId: user.clientId ?? null,
-          mustChangePassword: user.mustChangePassword,
-        },
+  public updateMe = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const currentUser = res.locals.user;
+      const input = updateProfileDtoSchema.parse(req.body);
+      const user = await this.authService.updateProfile(currentUser.id, input);
+      res.status(200).json({ data: this.toProfile(user) });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  public changePassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const currentUser = res.locals.user;
+      const input = changePasswordDtoSchema.parse(req.body);
+      await this.authService.changePassword(
+        currentUser.id,
+        input.currentPassword,
+        input.newPassword
+      );
+      res.clearCookie('refresh_token', { path: '/api/auth' });
+      res.status(204).send();
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  public forgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const input = forgotPasswordDtoSchema.parse(req.body);
+      await this.authService.forgotPassword(input.email);
+      res.status(202).json({
+        data: { message: 'Si el correo existe, se enviaron instrucciones.' },
       });
     } catch (err) {
       next(err);
     }
   };
+
+  public resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const input = resetPasswordDtoSchema.parse(req.body);
+      await this.authService.resetPassword(input.token, input.newPassword);
+      res.status(200).json({ data: { message: 'Contraseña actualizada correctamente.' } });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  private toProfile(user: {
+    id: string;
+    email: string;
+    fullName: string;
+    role: string;
+    phone?: string | null;
+    clientId: string | null;
+    mustChangePassword: boolean;
+  }) {
+    return {
+      id: user.id,
+      email: user.email,
+      fullName: user.fullName,
+      role: user.role,
+      phone: user.phone ?? null,
+      clientId: user.clientId ?? null,
+      mustChangePassword: user.mustChangePassword,
+    };
+  }
 }
