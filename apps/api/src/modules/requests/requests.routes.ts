@@ -4,6 +4,7 @@ import { RequestsService } from './requests.service.ts';
 import { PrismaRequestsRepository } from './requests.repository.ts';
 import { prisma } from '../../infrastructure/prisma/client.ts';
 import { authenticate, authorize } from '../../presentation/middlewares/auth.ts';
+import { createAttachmentsRouter } from '../attachments/attachments.routes.ts';
 
 export function createRequestsRouter(service?: RequestsService): Router {
   const router = Router();
@@ -48,6 +49,9 @@ export function createRequestsRouter(service?: RequestsService): Router {
 
   // Historial inmutable
   router.get('/:id/historial', authenticate, controller.getHistory);
+
+  // Adjuntos de la solicitud
+  router.use('/:id/adjuntos', createAttachmentsRouter(requestsService));
 
   return router;
 }

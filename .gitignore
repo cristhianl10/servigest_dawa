@@ -11,3 +11,6 @@ playwright-report/
 test-results/
 .vscode/
 .idea/
+
+# Almacenamiento local de adjuntos
+storage/

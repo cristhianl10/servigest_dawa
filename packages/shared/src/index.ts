@@ -8,4 +8,5 @@ export * from './auth.ts';
 export * from './users.ts';
 export * from './master-data.ts';
 export * from './dashboard.ts';
+export * from './attachments.ts';
 export * from './requests.ts';
