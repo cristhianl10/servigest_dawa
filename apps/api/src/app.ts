@@ -4,7 +4,7 @@ import cookieParser from 'cookie-parser';
 import { requestIdMiddleware } from './presentation/middlewares/request-id';
 import { errorHandlerMiddleware } from './presentation/middlewares/error-handler';
 import { healthRouter } from './presentation/routes/health.routes.ts';
-import { notificationsRouter } from './presentation/routes/notifications.routes.ts';
+import { notificationsRouter } from './modules/notifications/notifications.routes.ts';
 import { authRouter } from './modules/auth/auth.routes.ts';
 import { requestsRouter } from './modules/requests/requests.routes.ts';
 import { rolesRouter, usersRouter } from './modules/users/users.routes.ts';

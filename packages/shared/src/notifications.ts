@@ -21,3 +21,14 @@ export const notificationEventSchema = z.object({
 });
 
 export type NotificationEvent = z.infer<typeof notificationEventSchema>;
+
+export const notificationListFilterSchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  pageSize: z.coerce.number().int().min(1).max(100).default(20),
+  unread: z
+    .union([z.boolean(), z.enum(['true', 'false'])])
+    .transform((value) => value === true || value === 'true')
+    .optional(),
+});
+
+export type NotificationListFilter = z.infer<typeof notificationListFilterSchema>;
