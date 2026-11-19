@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import { requestIdMiddleware } from './presentation/middlewares/request-id';
 import { errorHandlerMiddleware } from './presentation/middlewares/error-handler';
 import { healthRouter } from './presentation/routes/health.routes.ts';
+import { openapiRouter } from './presentation/routes/docs.routes.ts';
 import { notificationsRouter } from './modules/notifications/notifications.routes.ts';
 import { dashboardRouter } from './modules/dashboard/dashboard.routes.ts';
 import { authRouter } from './modules/auth/auth.routes.ts';
@@ -40,6 +41,7 @@ export function createApp(): Express {
 
   // Registro de Rutas
   app.use('/api/health', healthRouter);
+  app.use('/api', openapiRouter);
   app.use('/api/auth', authRouter);
   app.use('/api/usuarios', usersRouter);
   app.use('/api/roles', rolesRouter);
