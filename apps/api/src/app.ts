@@ -5,6 +5,7 @@ import { requestIdMiddleware } from './presentation/middlewares/request-id';
 import { errorHandlerMiddleware } from './presentation/middlewares/error-handler';
 import { healthRouter } from './presentation/routes/health.routes.ts';
 import { notificationsRouter } from './modules/notifications/notifications.routes.ts';
+import { dashboardRouter } from './modules/dashboard/dashboard.routes.ts';
 import { authRouter } from './modules/auth/auth.routes.ts';
 import { requestsRouter } from './modules/requests/requests.routes.ts';
 import { rolesRouter, usersRouter } from './modules/users/users.routes.ts';
@@ -53,6 +54,7 @@ export function createApp(): Express {
   app.use('/api/feriados', holidaysRouter);
   app.use('/api/solicitudes', requestsRouter);
   app.use('/api/notificaciones', notificationsRouter);
+  app.use('/api/dashboard', dashboardRouter);
 
   // Middleware de Errores centralizado
   app.use(errorHandlerMiddleware);
