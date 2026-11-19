@@ -2,6 +2,7 @@ import express, { Express } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { requestIdMiddleware } from './presentation/middlewares/request-id';
+import { httpLogger } from './infrastructure/logging/http-logger.ts';
 import { errorHandlerMiddleware } from './presentation/middlewares/error-handler';
 import { healthRouter } from './presentation/routes/health.routes.ts';
 import { openapiRouter } from './presentation/routes/docs.routes.ts';
@@ -38,6 +39,7 @@ export function createApp(): Express {
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
   app.use(requestIdMiddleware);
+  app.use(httpLogger);
 
   // Registro de Rutas
   app.use('/api/health', healthRouter);

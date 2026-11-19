@@ -1,7 +1,40 @@
 import { Request, Response, NextFunction } from 'express';
+import { Prisma } from '@prisma/client';
 import { ZodError } from 'zod';
 import { ApiErrorResponse } from '@servigest/shared';
-import { DomainError } from '../../domain/errors/domain-error';
+import { DomainError } from '../../domain/errors/domain-error.ts';
+
+export function translateKnownError(err: unknown): DomainError | null {
+  if (err instanceof Prisma.PrismaClientKnownRequestError) {
+    if (err.code === 'P2002') {
+      return new DomainError(
+        'ENTIDAD_EN_USO',
+        409,
+        'Ya existe un registro con los mismos datos únicos.'
+      );
+    }
+    if (err.code === 'P2003') {
+      return new DomainError(
+        'ENTIDAD_EN_USO',
+        409,
+        'La entidad está referenciada por otros registros.'
+      );
+    }
+    if (err.code === 'P2025') {
+      return new DomainError('RECURSO_NO_ENCONTRADO', 404, 'El recurso no existe.');
+    }
+  }
+
+  if (
+    err instanceof SyntaxError &&
+    'body' in err &&
+    (err as SyntaxError & { type?: string }).type === 'entity.parse.failed'
+  ) {
+    return new DomainError('VALIDACION_FALLIDA', 422, 'El cuerpo JSON no es válido.');
+  }
+
+  return null;
+}
 
 export function errorHandlerMiddleware(
   err: unknown,
@@ -25,7 +58,21 @@ export function errorHandlerMiddleware(
     return;
   }
 
-  // 2. Error de Validación Zod
+  // 2. Errores conocidos de Prisma o del parser de JSON
+  const translated = translateKnownError(err);
+  if (translated) {
+    const response: ApiErrorResponse = {
+      error: {
+        code: translated.code,
+        message: translated.message,
+        requestId,
+      },
+    };
+    res.status(translated.httpStatus).json(response);
+    return;
+  }
+
+  // 3. Error de Validación Zod
   if (err instanceof ZodError) {
     const details = err.errors.map((e) => ({
       field: e.path.join('.'),
@@ -43,7 +90,7 @@ export function errorHandlerMiddleware(
     return;
   }
 
-  // 3. Error Inesperado / 500
+  // 4. Error Inesperado / 500
   console.error(`[Error 500][RequestId: ${requestId}]`, err);
   const response: ApiErrorResponse = {
     error: {
