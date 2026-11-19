@@ -17,10 +17,10 @@ export function createClientsRouter(service?: ClientsService): Router {
 
   router.get('/', authorize('ADMIN', 'COORDINADOR'), controller.list);
   router.post('/', authorize('ADMIN'), controller.create);
-  router.get('/:id', authorize('ADMIN', 'COORDINADOR'), controller.getById);
+  router.get('/:id', authorize('ADMIN', 'COORDINADOR', 'CLIENTE'), controller.getById);
   router.patch('/:id', authorize('ADMIN'), controller.update);
   router.delete('/:id', authorize('ADMIN'), controller.deactivate);
-  router.get('/:id/sedes', authorize('ADMIN', 'COORDINADOR'), controller.listSites);
+  router.get('/:id/sedes', authorize('ADMIN', 'COORDINADOR', 'CLIENTE'), controller.listSites);
   router.post('/:id/sedes', authorize('ADMIN'), controller.createSite);
 
   return router;
@@ -34,7 +34,7 @@ export function createSitesRouter(service?: ClientsService): Router {
 
   router.patch('/:id', authorize('ADMIN'), controller.updateSite);
   router.delete('/:id', authorize('ADMIN'), controller.deactivateSite);
-  router.get('/:id/equipos', authorize('ADMIN', 'COORDINADOR'), controller.listAssets);
+  router.get('/:id/equipos', authorize('ADMIN', 'COORDINADOR', 'CLIENTE'), controller.listAssets);
   router.post('/:id/equipos', authorize('ADMIN'), controller.createAsset);
 
   return router;

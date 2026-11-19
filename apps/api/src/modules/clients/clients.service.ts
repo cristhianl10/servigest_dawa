@@ -138,6 +138,7 @@ export class ClientsService {
     return this.repository.listSites(clientId);
   }
 
+
   public async createSite(clientId: string, input: CreateSiteDto): Promise<ClientSiteRecord> {
     await this.getClient(clientId);
 
@@ -242,7 +243,7 @@ export class ClientsService {
     });
   }
 
-  private async getSite(id: string): Promise<ClientSiteRecord> {
+  public async getSite(id: string): Promise<ClientSiteRecord> {
     const site = await this.repository.findSiteById(id);
     if (!site) {
       throw new DomainError('RECURSO_NO_ENCONTRADO', 404, 'Sede no encontrada.');

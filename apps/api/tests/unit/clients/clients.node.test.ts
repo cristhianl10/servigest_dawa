@@ -1,6 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { ClientsService } from '../../../src/modules/clients/clients.service.ts';
+import { ClientsController } from '../../../src/modules/clients/clients.controller.ts';
 import { InMemoryClientRepository } from '../../../src/modules/clients/clients.repository.ts';
 import { DomainError } from '../../../src/domain/errors/domain-error.ts';
 import type { AssetRecord, ClientRecord, ClientSiteRecord } from '../../../src/modules/clients/clients.service.ts';
@@ -154,6 +155,47 @@ describe('Módulo de Clientes, Sedes y Equipos (TC-CLI)', () => {
     await service.deactivateClient('cli-1');
     const client = await service.getClient('cli-1');
     assert.strictEqual(client.status, 'INACTIVO');
+  });
+
+  it('TC-CLI-07: CLIENTE solo accede a equipos de sus propias sedes', async () => {
+    const { service } = createFixture();
+    const controller = new ClientsController(service);
+
+    const call = async (clientId: string) => {
+      let error: unknown;
+      let statusCode = 0;
+      let payload: unknown;
+      const res = {
+        locals: { user: { id: 'user-1', role: 'CLIENTE', clientId } },
+        status(code: number) {
+          statusCode = code;
+          return this;
+        },
+        json(body: unknown) {
+          payload = body;
+          return this;
+        },
+      };
+
+      await controller.listAssets(
+        { params: { id: 'site-1' } } as any,
+        res as any,
+        ((err?: unknown) => {
+          error = err;
+        }) as any
+      );
+
+      return { error, statusCode, payload };
+    };
+
+    const forbidden = await call('cli-otro');
+    assert.ok(forbidden.error instanceof DomainError);
+    assert.strictEqual((forbidden.error as DomainError).httpStatus, 404);
+
+    const allowed = await call('cli-1');
+    assert.strictEqual(allowed.error, undefined);
+    assert.strictEqual(allowed.statusCode, 200);
+    assert.strictEqual((allowed.payload as { data: unknown[] }).data.length, 1);
   });
 
   it('TC-CLI-06: detalle de cliente incluye sus sedes', async () => {

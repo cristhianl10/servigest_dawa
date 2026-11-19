@@ -8,6 +8,7 @@ import {
   updateClientDtoSchema,
   updateSiteDtoSchema,
 } from '@servigest/shared';
+import { DomainError } from '../../domain/errors/domain-error.ts';
 import type { AssetRecord, ClientRecord, ClientSiteRecord } from './clients.service.ts';
 import { ClientsService } from './clients.service.ts';
 
@@ -78,6 +79,7 @@ export class ClientsController {
 
   public getById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      this.assertClientAccess(res, req.params.id);
       const client = await this.service.getClient(req.params.id);
       const sites = await this.service.listSites(client.id);
       res.status(200).json({ data: { ...toClient(client), sites: sites.map(toSite) } });
@@ -117,6 +119,7 @@ export class ClientsController {
 
   public listSites = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      this.assertClientAccess(res, req.params.id);
       const sites = await this.service.listSites(req.params.id);
       res.status(200).json({ data: sites.map(toSite) });
     } catch (err) {
@@ -155,6 +158,8 @@ export class ClientsController {
 
   public listAssets = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      const site = await this.service.getSite(req.params.id);
+      this.assertClientAccess(res, site.clientId);
       const assets = await this.service.listAssets(req.params.id);
       res.status(200).json({ data: assets.map(toAsset) });
     } catch (err) {
@@ -181,4 +186,11 @@ export class ClientsController {
       next(err);
     }
   };
+
+  private assertClientAccess(res: Response, clientId: string): void {
+    const user = res.locals.user;
+    if (user?.role === 'CLIENTE' && user.clientId !== clientId) {
+      throw new DomainError('RECURSO_NO_ENCONTRADO', 404, 'Cliente no encontrado.');
+    }
+  }
 }
