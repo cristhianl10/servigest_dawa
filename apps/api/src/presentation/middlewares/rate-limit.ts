@@ -6,8 +6,8 @@ interface Bucket {
   resetAt: number;
 }
 
-const WINDOW_MS = 15 * 60 * 1000;
-const MAX_ATTEMPTS = 5;
+const WINDOW_MS = Number(process.env.LOGIN_RATE_LIMIT_WINDOW_MS ?? 15 * 60 * 1000);
+const MAX_ATTEMPTS = Number(process.env.LOGIN_RATE_LIMIT_MAX_ATTEMPTS ?? 5);
 const buckets = new Map<string, Bucket>();
 
 function keyFor(req: Request): string {

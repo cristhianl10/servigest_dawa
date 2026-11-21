@@ -38,12 +38,13 @@ El frontend y backend están implementados y conectados a una instancia PostgreS
 ### P-03 — Matriz de autorización por rol
 
 - **Severidad:** Mayor.
-- **Estado:** Parcialmente verificado; falta completar la matriz HTTP por endpoint.
+- **Estado:** Verificado en endpoints críticos; falta ampliar cobertura al 100 % de endpoints.
 - **Roles:** `ADMIN`, `COORDINADOR`, `TECNICO`, `CLIENTE`.
 - **Pendiente:** Probar permisos, denegaciones, aislamiento de recursos e IDOR para cada endpoint protegido.
 - **Criterio de aceptación:** El frontend oculta acciones no permitidas y el backend las rechaza aunque se manipule la interfaz.
-- **Implementación/verificación:** Se agregaron `TC-SEC-01` para aislamiento de clientes e `TC-SEC-02` para aislamiento de técnicos en `apps/api/tests/unit/requests/requests.node.test.ts`. Ambas pruebas pasan.
-- **Pendiente:** Ejecutar la matriz completa de endpoints, roles, tokens inválidos y casos IDOR contra API + PostgreSQL.
+- **Implementación/verificación:** Se agregaron `TC-SEC-01` para aislamiento de clientes e `TC-SEC-02` para aislamiento de técnicos en `apps/api/tests/unit/requests/requests.node.test.ts`, además de `apps/web/e2e/authorization-matrix.spec.ts`. La prueba E2E verifica `401` sin token, permisos de `ADMIN`/`COORDINADOR`, denegaciones para `TECNICO`/`CLIENTE`, acceso por rol a clientes y solicitudes, y aislamiento IDOR en solicitudes e historial.
+- **Evidencia:** Matriz E2E ejecutada contra API, frontend y PostgreSQL reales: 1 prueba aprobada. La suite E2E completa queda en 5 pruebas aprobadas.
+- **Pendiente residual:** Ampliar la matriz al 100 % de endpoints protegidos y añadir casos de tokens expirados o malformados.
 
 ### P-04 — Modales accesibles
 
