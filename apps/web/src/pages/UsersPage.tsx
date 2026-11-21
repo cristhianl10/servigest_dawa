@@ -6,6 +6,7 @@ import { useToast } from '../components/Toast';
 import { EmptyBlock, ErrorBlock, LoadingBlock } from '../components/Feedback';
 import { Card, Modal, PageHeader, Pagination, Badge } from '../components/Ui';
 import { api } from '../lib/api';
+import { PasswordField } from '../components/PasswordField';
 import type { Client, User } from '../lib/types';
 import { ROLE_LABELS, errorMessage, formatDateTime } from '../lib/utils';
 
@@ -317,18 +318,15 @@ export function UsersPage() {
           </div>
 
           {!editing && (
-            <label className="field">
-              <span>Contraseña temporal</span>
-              <input
-                type="password"
-                value={form.temporaryPassword}
-                onChange={(event) => setForm({ ...form, temporaryPassword: event.target.value })}
-                minLength={8}
-                required
-                autoComplete="new-password"
-              />
-              <small>Mínimo 8 caracteres. El usuario deberá cambiarla en su primer ingreso.</small>
-            </label>
+            <PasswordField
+              label="Contraseña temporal"
+              value={form.temporaryPassword}
+              onChange={(event) => setForm({ ...form, temporaryPassword: event.target.value })}
+              minLength={8}
+              required
+              autoComplete="new-password"
+              hint="Mínimo 8 caracteres. El usuario deberá cambiarla en su primer ingreso."
+            />
           )}
         </form>
       </Modal>

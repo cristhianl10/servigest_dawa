@@ -7,6 +7,7 @@ import { PageHeader, Card } from '../components/Ui';
 import { api } from '../lib/api';
 import type { User } from '../lib/types';
 import { ROLE_LABELS, errorMessage, formatDateTime } from '../lib/utils';
+import { PasswordField } from '../components/PasswordField';
 
 export function ProfilePage() {
   const { user, updateUser, logout } = useAuth();
@@ -134,37 +135,28 @@ export function ProfilePage() {
             <p>Al cambiar la contraseña se cerrará esta sesión.</p>
           </div>
           <form className="form-stack" onSubmit={changePassword}>
-            <label className="field">
-              <span>Contraseña actual</span>
-              <input
-                type="password"
-                value={currentPassword}
-                onChange={(event) => setCurrentPassword(event.target.value)}
-                autoComplete="current-password"
-                required
-              />
-            </label>
-            <label className="field">
-              <span>Nueva contraseña</span>
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(event) => setNewPassword(event.target.value)}
-                autoComplete="new-password"
-                required
-              />
-              <small>Mínimo 10 caracteres con mayúscula, minúscula, número y símbolo.</small>
-            </label>
-            <label className="field">
-              <span>Confirmar nueva contraseña</span>
-              <input
-                type="password"
-                value={confirmation}
-                onChange={(event) => setConfirmation(event.target.value)}
-                autoComplete="new-password"
-                required
-              />
-            </label>
+            <PasswordField
+              label="Contraseña actual"
+              value={currentPassword}
+              onChange={(event) => setCurrentPassword(event.target.value)}
+              autoComplete="current-password"
+              required
+            />
+            <PasswordField
+              label="Nueva contraseña"
+              value={newPassword}
+              onChange={(event) => setNewPassword(event.target.value)}
+              autoComplete="new-password"
+              required
+              hint="Mínimo 10 caracteres con mayúscula, minúscula, número y símbolo."
+            />
+            <PasswordField
+              label="Confirmar nueva contraseña"
+              value={confirmation}
+              onChange={(event) => setConfirmation(event.target.value)}
+              autoComplete="new-password"
+              required
+            />
             <button className="btn btn-primary" type="submit" disabled={savingPassword}>
               {savingPassword ? 'Actualizando…' : 'Cambiar contraseña'}
             </button>

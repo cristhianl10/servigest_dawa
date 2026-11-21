@@ -17,11 +17,13 @@ El frontend y backend están implementados y conectados a una instancia PostgreS
 ### P-01 — Mostrar y ocultar contraseñas
 
 - **Severidad:** Mayor.
-- **Estado:** Pendiente.
+- **Estado:** Implementado; pendiente de validación manual en navegador.
 - **Afecta:** `LoginPage.tsx`, `ResetPasswordPage.tsx`, `ProfilePage.tsx`, `UsersPage.tsx`.
 - **Problema:** Todos los campos usan `type="password"` sin un control para visualizar temporalmente el valor.
 - **Solución requerida:** Botón accesible por teclado con estado `Mostrar contraseña` / `Ocultar contraseña`, `aria-label` y `aria-pressed`, independiente para cada campo.
 - **Criterio de aceptación:** Se puede alternar la visibilidad sin perder foco ni contenido; por defecto la contraseña permanece oculta.
+- **Implementación:** Componente reutilizable `apps/web/src/components/PasswordField.tsx`, aplicado a login, reset, perfil y usuarios. Incluye `aria-label`, `aria-pressed`, iconos de ojo y foco visible.
+- **Verificación técnica:** TypeScript y build de producción frontend pasan.
 
 ### P-02 — Pruebas E2E de flujos principales
 

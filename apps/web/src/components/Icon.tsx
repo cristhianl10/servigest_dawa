@@ -24,7 +24,9 @@ export type IconName =
   | 'send'
   | 'arrowLeft'
   | 'shield'
-  | 'refresh';
+  | 'refresh'
+  | 'eye'
+  | 'eyeOff';
 
 const paths: Record<IconName, JSX.Element> = {
   dashboard: (
@@ -126,6 +128,19 @@ const paths: Record<IconName, JSX.Element> = {
     <>
       <path d="M21 12a9 9 0 1 1-2.64-6.36" />
       <path d="M21 3v6h-6" />
+    </>
+  ),
+  eye: (
+    <>
+      <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z" />
+      <circle cx="12" cy="12" r="2.5" />
+    </>
+  ),
+  eyeOff: (
+    <>
+      <path d="m3 3 18 18" />
+      <path d="M10.6 6.2A10.8 10.8 0 0 1 12 6c6.5 0 10 6 10 6a18.7 18.7 0 0 1-3.1 3.7M6.2 6.2C3.5 8.2 2 12 2 12s3.5 6 10 6a10.8 10.8 0 0 0 2-.2" />
+      <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
     </>
   ),
 };

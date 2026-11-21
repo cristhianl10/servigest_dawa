@@ -1,8 +1,10 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { passwordSchema } from '@servigest/shared';
+import { Icon } from '../components/Icon';
 import { api } from '../lib/api';
 import { errorMessage } from '../lib/utils';
+import { PasswordField } from '../components/PasswordField';
 
 export function ResetPasswordPage() {
   const [params] = useSearchParams();
@@ -41,11 +43,11 @@ export function ResetPasswordPage() {
   return (
     <div className="auth-simple">
       <div className="auth-card">
-        <Link to="/login" className="back-link">← Volver al inicio de sesión</Link>
+        <Link to="/login" className="back-link"><Icon name="arrowLeft" size={15} /> Volver al inicio de sesión</Link>
         <div className="auth-heading">
-          <span className="eyebrow">Nueva contraseña</span>
           <h1>Crea una contraseña segura</h1>
           <p>Mínimo 10 caracteres, con mayúscula, minúscula, número y símbolo.</p>
+          <span className="auth-seal">Nueva contraseña</span>
         </div>
 
         {!token ? (
@@ -55,26 +57,20 @@ export function ResetPasswordPage() {
         ) : (
           <form onSubmit={handleSubmit} className="form-stack">
             {error && <div className="alert alert-error" role="alert">{error}</div>}
-            <label className="field">
-              <span>Nueva contraseña</span>
-              <input
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                autoComplete="new-password"
-                required
-              />
-            </label>
-            <label className="field">
-              <span>Confirmar contraseña</span>
-              <input
-                type="password"
-                value={confirmation}
-                onChange={(event) => setConfirmation(event.target.value)}
-                autoComplete="new-password"
-                required
-              />
-            </label>
+            <PasswordField
+              label="Nueva contraseña"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              autoComplete="new-password"
+              required
+            />
+            <PasswordField
+              label="Confirmar contraseña"
+              value={confirmation}
+              onChange={(event) => setConfirmation(event.target.value)}
+              autoComplete="new-password"
+              required
+            />
             <button className="btn btn-primary btn-block" type="submit" disabled={submitting}>
               {submitting ? 'Guardando…' : 'Actualizar contraseña'}
             </button>
