@@ -10,6 +10,47 @@ const users = {
 
 type Session = { accessToken: string; user: { id: string; role: string } };
 
+async function openNotificationStream(token: string) {
+  const controller = new AbortController();
+  const response = await fetch(`${API_URL}/notificaciones/stream`, {
+    headers: { Authorization: `Bearer ${token}`, Accept: 'text/event-stream' },
+    signal: controller.signal,
+  });
+  expect(response.ok).toBeTruthy();
+  const reader = response.body!.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let ready!: () => void;
+  let notify!: (event: { type: string; requestId: string | null; title: string }) => void;
+  const readyPromise = new Promise<void>((resolve) => { ready = resolve; });
+  const notificationPromise = new Promise<{ type: string; requestId: string | null; title: string }>((resolve) => { notify = resolve; });
+
+  void (async () => {
+    try {
+      while (!controller.signal.aborted) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let boundary = buffer.indexOf('\n\n');
+        while (boundary >= 0) {
+          const chunk = buffer.slice(0, boundary);
+          buffer = buffer.slice(boundary + 2);
+          boundary = buffer.indexOf('\n\n');
+          if (chunk.includes('event: ready')) ready();
+          if (chunk.includes('event: notification')) {
+            const data = chunk.split('\n').find((line) => line.startsWith('data:'))?.slice(5).trim();
+            if (data) notify(JSON.parse(data));
+          }
+        }
+      }
+    } catch {
+      // El cierre controlado del stream termina la lectura con AbortError.
+    }
+  })();
+  await readyPromise;
+  return { notification: notificationPromise, close: () => controller.abort() };
+}
+
 async function login(api: APIRequestContext, email: string): Promise<Session> {
   const response = await api.post(`${API_URL}/auth/login`, { data: { email, password } });
   expect(response.ok()).toBeTruthy();
@@ -167,4 +208,30 @@ test('E2E-02: consulta, cierre, bloqueo y reapertura auditada', async ({ page, r
 
   const history = await apiRequest(request, client.accessToken, `/solicitudes/${requestId}/historial`);
   expect(history.data.map((item: { action: string }) => item.action)).toContain('REAPERTURA');
+});
+
+test('E2E-03: SSE entrega la notificación del cambio de estado', async ({ request }) => {
+  const client = await login(request, users.client);
+  const coordinator = await login(request, users.coordinator);
+  const created = await apiRequest(request, client.accessToken, '/solicitudes', {
+    method: 'POST',
+    data: {
+      siteId: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+      categoryId: 1,
+      priority: 'BAJA',
+      description: `E2E SSE ${Date.now()} — validación de evento de aprobación.`,
+    },
+  });
+  const stream = await openNotificationStream(client.accessToken);
+  await apiRequest(request, coordinator.accessToken, `/solicitudes/${created.data.id}/estado`, {
+    method: 'PATCH',
+    data: { action: 'aprobar', version: created.data.version },
+  });
+  const event = await Promise.race([
+    stream.notification,
+    new Promise<never>((_, reject) => setTimeout(() => reject(new Error('SSE no entregó la notificación')), 5_000)),
+  ]);
+  stream.close();
+  expect(event.requestId).toBe(created.data.id);
+  expect(event.type).toBe('CAMBIO_ESTADO');
 });

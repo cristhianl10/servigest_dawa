@@ -28,12 +28,12 @@ El frontend y backend están implementados y conectados a una instancia PostgreS
 ### P-02 — Pruebas E2E de flujos principales
 
 - **Severidad:** Mayor.
-- **Estado:** Implementado y verificado; queda pendiente ampliar cobertura SSE específica si se requiere evidencia de evento individual.
+- **Estado:** Implementado y verificado, incluyendo evento SSE específico.
 - **Problema:** No hay evidencia automatizada de los dos flujos completos definidos en `docs/05-pruebas.md`.
-- **Pendiente:** Registro → aprobación → asignación → atención → SSE; y consulta → seguimiento → cierre → intento inválido → reapertura.
+- **Pendiente original:** Registro → aprobación → asignación → atención → SSE; y consulta → seguimiento → cierre → intento inválido → reapertura.
 - **Criterio de aceptación:** Ambos flujos pasan contra PostgreSQL y frontend real, sin mocks de la base.
 - **Implementación:** Se añadieron `apps/web/e2e/auth-session.spec.ts` y `apps/web/e2e/business-flow.spec.ts`, junto con el script `apps/web:test:e2e`. La suite cubre login, mostrar/ocultar contraseña, registro, aprobación, asignación, atención, consulta, cierre, bloqueo de transición inválida, reapertura e historial.
-- **Evidencia:** E2E-01 y E2E-02 ejecutados con Playwright, Chromium, frontend, API y PostgreSQL reales: 2 pruebas aprobadas, 0 fallidas.
+- **Evidencia:** E2E-01, E2E-02 y E2E-03 ejecutados con Playwright, Chromium, frontend, API y PostgreSQL reales. E2E-03 mantiene un stream autenticado y verifica el evento `CAMBIO_ESTADO` con el `requestId` correcto.
 
 ### P-03 — Matriz de autorización por rol
 
