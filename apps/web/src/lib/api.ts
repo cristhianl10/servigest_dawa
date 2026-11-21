@@ -115,7 +115,8 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
     credentials: 'include',
   });
 
-  if (response.status === 401 && auth && retry && !path.startsWith('/auth/')) {
+  const retryableAuthPath = !['/auth/login', '/auth/refresh', '/auth/logout'].includes(path);
+  if (response.status === 401 && auth && retry && retryableAuthPath) {
     const renewed = await refreshAccessToken();
     if (renewed) {
       return apiRequest<T>(path, { ...options, retry: false });
