@@ -118,7 +118,14 @@ export function NewRequestPage() {
         <Card>
           {loadingOptions && <LoadingBlock label="Cargando catálogos y sedes…" />}
           {(clientsQuery.isError || sitesQuery.isError || categoriesQuery.isError) && (
-            <ErrorBlock error={clientsQuery.error ?? sitesQuery.error ?? categoriesQuery.error} />
+            <ErrorBlock
+              error={clientsQuery.error ?? sitesQuery.error ?? categoriesQuery.error}
+              onRetry={() => {
+                void clientsQuery.refetch();
+                void sitesQuery.refetch();
+                void categoriesQuery.refetch();
+              }}
+            />
           )}
 
           <form onSubmit={handleSubmit} className="form-stack">

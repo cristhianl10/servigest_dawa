@@ -88,8 +88,9 @@ El frontend y backend están implementados y conectados a una instancia PostgreS
 ### P-08 — Estados de interfaz
 
 - **Severidad:** Media.
-- **Estado:** Parcialmente implementado; falta revisión completa.
-- **Pendiente:** Confirmar estados consistentes de carga, error, vacío, éxito y reintento en cada pantalla.
+- **Estado:** Implementado para las pantallas principales.
+- **Verificación:** Los estados reutilizables `LoadingBlock`, `ErrorBlock` y `EmptyBlock` cubren carga, error, vacío y reintento en dashboard, solicitudes, detalle, clientes, técnicos, usuarios, catálogos y notificaciones. Se añadió reintento conjunto para los catálogos de nueva solicitud y reintento para técnicos del modal de asignación.
+- **Evidencia:** Compilación TypeScript y build de producción frontend aprobados.
 
 ### P-09 — `PageHeader` no muestra `eyebrow`
 

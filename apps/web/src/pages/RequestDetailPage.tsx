@@ -244,9 +244,8 @@ export function RequestDetailPage() {
       </button>
 
       <PageHeader
-        eyebrow={request.code}
         title={request.category?.name ?? 'Solicitud de servicio'}
-        description={`Registrada el ${formatDateTime(request.createdAt)} · ${request.client?.businessName ?? ''} · ${request.site?.name ?? ''}`}
+        description={`Expediente ${request.code} · Registrada el ${formatDateTime(request.createdAt)} · ${request.client?.businessName ?? ''} · ${request.site?.name ?? ''}`}
         actions={
           <div className="action-bar">
             {actions.map((option) => (
@@ -277,7 +276,6 @@ export function RequestDetailPage() {
           <Card>
             <div className="card-heading">
               <h2>Descripción</h2>
-              <PriorityBadge priority={request.priority} />
             </div>
             <p className="description-text">{request.description}</p>
             {request.resolution && (
@@ -361,6 +359,11 @@ export function RequestDetailPage() {
               <p>Trazabilidad inmutable de la solicitud.</p>
             </div>
             <ol className="timeline">
+              {request.history.length === 0 && (
+                <li className="muted">
+                  <p>Sin movimientos registrados.</p>
+                </li>
+              )}
               {request.history.map((event) => (
                 <li key={event.id}>
                   <span className="timeline-dot" />
@@ -497,7 +500,7 @@ export function RequestDetailPage() {
         {techniciansQuery.isLoading ? (
           <LoadingBlock label="Buscando técnicos disponibles…" />
         ) : techniciansQuery.isError ? (
-          <ErrorBlock error={techniciansQuery.error} />
+          <ErrorBlock error={techniciansQuery.error} onRetry={() => void techniciansQuery.refetch()} />
         ) : (
           <form id="assign-form" onSubmit={submitAssignment} className="form-stack">
             <label className="field">
