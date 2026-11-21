@@ -77,6 +77,66 @@ describe('Módulo de Solicitudes, Asignaciones y Auditoría (TC-SOL / TC-ASI / T
     );
   });
 
+  it('TC-SEC-01: cliente no puede consultar ni listar solicitudes de otra empresa (IDOR)', async () => {
+    const { service, clientActor } = createFixture();
+    const request = await service.createRequest(
+      {
+        siteId: 'site-001',
+        categoryId: 1,
+        priority: 'MEDIA',
+        description: 'Solicitud de prueba para verificar aislamiento entre clientes.',
+      },
+      clientActor
+    );
+    const otherClient: ActorContext = {
+      id: 'usr-cli-2',
+      role: 'CLIENTE',
+      clientId: 'cli-002',
+    };
+
+    await assert.rejects(
+      async () => service.getRequestById(request.id, otherClient),
+      (err: any) => err instanceof DomainError && err.code === 'RECURSO_NO_ENCONTRADO' && err.httpStatus === 404
+    );
+
+    const list = await service.listRequests(otherClient, {
+      page: 1,
+      pageSize: 20,
+      clientId: 'cli-001',
+    });
+    assert.strictEqual(list.total, 0);
+  });
+
+  it('TC-SEC-02: técnico no puede consultar una solicitud no asignada a su cargo (IDOR)', async () => {
+    const { service, clientActor } = createFixture();
+    const request = await service.createRequest(
+      {
+        siteId: 'site-001',
+        categoryId: 1,
+        priority: 'MEDIA',
+        description: 'Solicitud de prueba para verificar aislamiento entre técnicos.',
+      },
+      clientActor
+    );
+    const otherTechnician: ActorContext = {
+      id: 'usr-tec-2',
+      role: 'TECNICO',
+      technicianId: 'tec-002',
+    };
+
+    await assert.rejects(
+      async () => service.getRequestById(request.id, otherTechnician),
+      (err: any) => err instanceof DomainError && err.code === 'RECURSO_NO_ENCONTRADO' && err.httpStatus === 404
+    );
+
+    const list = await service.listRequests(otherTechnician, {
+      page: 1,
+      pageSize: 20,
+      assignedTechnicianId: 'tec-001',
+    });
+    assert.strictEqual(list.total, 0);
+  });
+
   it('TC-ASI-01: asignación de técnico idóneo valida especialidad requerida y pasa a ASIGNADA', async () => {
     const { service, clientActor, coordActor } = createFixture();
 

@@ -36,18 +36,22 @@ El frontend y backend están implementados y conectados a una instancia PostgreS
 ### P-03 — Matriz de autorización por rol
 
 - **Severidad:** Mayor.
-- **Estado:** Pendiente de evidencia completa.
+- **Estado:** Parcialmente verificado; falta completar la matriz HTTP por endpoint.
 - **Roles:** `ADMIN`, `COORDINADOR`, `TECNICO`, `CLIENTE`.
 - **Pendiente:** Probar permisos, denegaciones, aislamiento de recursos e IDOR para cada endpoint protegido.
 - **Criterio de aceptación:** El frontend oculta acciones no permitidas y el backend las rechaza aunque se manipule la interfaz.
+- **Implementación/verificación:** Se agregaron `TC-SEC-01` para aislamiento de clientes e `TC-SEC-02` para aislamiento de técnicos en `apps/api/tests/unit/requests/requests.node.test.ts`. Ambas pruebas pasan.
+- **Pendiente:** Ejecutar la matriz completa de endpoints, roles, tokens inválidos y casos IDOR contra API + PostgreSQL.
 
 ### P-04 — Modales accesibles
 
 - **Severidad:** Media.
-- **Estado:** Pendiente.
+- **Estado:** Implementado; pendiente de validación manual con teclado.
 - **Ubicación:** `apps/web/src/components/Ui.tsx`.
 - **Problema:** Debe verificarse focus trap, devolución del foco al invocador y cierre con `Escape`.
 - **Criterio de aceptación:** Al abrir, el foco entra al modal; `Tab` no escapa; `Escape` cierra; el foco vuelve al botón que lo abrió.
+- **Implementación:** `Modal` ahora gestiona foco inicial, focus trap, cierre con `Escape`, `aria-labelledby` y devolución del foco al elemento invocador.
+- **Verificación técnica:** TypeScript y build de producción frontend pasan.
 
 ### P-05 — Dashboard con alternativa accesible
 
