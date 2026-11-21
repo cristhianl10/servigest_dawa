@@ -85,10 +85,12 @@ El frontend y backend están implementados y conectados a una instancia PostgreS
 ### P-09 — `PageHeader` no muestra `eyebrow`
 
 - **Severidad:** Menor.
-- **Estado:** Pendiente.
+- **Estado:** Implementado.
 - **Ubicación:** `apps/web/src/components/Ui.tsx`.
 - **Problema:** El componente declara la prop `eyebrow`, pero no la desestructura ni la renderiza.
 - **Criterio de aceptación:** Cuando una página envía `eyebrow`, aparece antes del título.
+- **Implementación:** `PageHeader` ahora renderiza la prop como texto contextual sobre el título con estilo consistente.
+- **Verificación técnica:** TypeScript y build de producción frontend pasan.
 
 ## Elementos ya verificados
 

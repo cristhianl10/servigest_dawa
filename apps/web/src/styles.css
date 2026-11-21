@@ -665,6 +665,17 @@ code {
   border-bottom: 1px solid var(--line-strong);
 }
 
+.page-eyebrow {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--petrol-700);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
 .page-header > div:first-child {
   max-width: 72ch;
 }

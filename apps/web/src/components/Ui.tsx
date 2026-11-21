@@ -36,6 +36,7 @@ export function PriorityBadge({ priority }: { priority: Priority }) {
 }
 
 export function PageHeader({
+  eyebrow,
   title,
   description,
   actions,
@@ -48,6 +49,7 @@ export function PageHeader({
   return (
     <header className="page-header">
       <div>
+        {eyebrow && <span className="page-eyebrow">{eyebrow}</span>}
         <h1>{title}</h1>
         {description && <p>{description}</p>}
       </div>
