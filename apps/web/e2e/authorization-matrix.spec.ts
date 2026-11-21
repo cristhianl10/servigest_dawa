@@ -90,6 +90,31 @@ test('matriz de autorización por rol e IDOR', async ({ request }) => {
     await expect(status(request, technician, path, 'POST')).resolves.toBe(403);
   }
 
+  const mutableGuards: Array<[string, string]> = [
+    ['/usuarios/00000000-0000-0000-0000-000000000000', 'PATCH'],
+    ['/usuarios/00000000-0000-0000-0000-000000000000', 'DELETE'],
+    ['/clientes/00000000-0000-0000-0000-000000000000', 'PATCH'],
+    ['/clientes/00000000-0000-0000-0000-000000000000', 'DELETE'],
+    ['/sedes/00000000-0000-0000-0000-000000000000', 'PATCH'],
+    ['/sedes/00000000-0000-0000-0000-000000000000', 'DELETE'],
+    ['/equipos/00000000-0000-0000-0000-000000000000', 'PATCH'],
+    ['/tecnicos/00000000-0000-0000-0000-000000000000', 'PATCH'],
+    ['/tecnicos/00000000-0000-0000-0000-000000000000', 'DELETE'],
+    ['/tecnicos/00000000-0000-0000-0000-000000000000/especialidades', 'PUT'],
+    ['/especialidades/00000000-0000-0000-0000-000000000000', 'PATCH'],
+    ['/especialidades/00000000-0000-0000-0000-000000000000', 'DELETE'],
+    ['/categorias-servicio/00000000-0000-0000-0000-000000000000', 'PATCH'],
+    ['/categorias-servicio/00000000-0000-0000-0000-000000000000', 'DELETE'],
+    ['/parametros/PRUEBA_E2E', 'PUT'],
+    ['/feriados', 'POST'],
+    ['/feriados/2099-01-01', 'DELETE'],
+  ];
+
+  for (const [path, method] of mutableGuards) {
+    await expect(status(request, client, path, method), `${method} ${path} CLIENTE`).resolves.toBe(403);
+    await expect(status(request, technician, path, method), `${method} ${path} TECNICO`).resolves.toBe(403);
+  }
+
   await expect(status(request, admin, '/solicitudes')).resolves.toBe(200);
   await expect(status(request, coordinator, '/solicitudes')).resolves.toBe(200);
   await expect(status(request, technician, '/solicitudes')).resolves.toBe(200);
