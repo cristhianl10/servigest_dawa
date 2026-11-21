@@ -28,10 +28,12 @@ El frontend y backend están implementados y conectados a una instancia PostgreS
 ### P-02 — Pruebas E2E de flujos principales
 
 - **Severidad:** Mayor.
-- **Estado:** Pendiente.
+- **Estado:** Parcialmente implementado; falta completar flujos operativos.
 - **Problema:** No hay evidencia automatizada de los dos flujos completos definidos en `docs/05-pruebas.md`.
 - **Pendiente:** Registro → aprobación → asignación → atención → SSE; y consulta → seguimiento → cierre → intento inválido → reapertura.
 - **Criterio de aceptación:** Ambos flujos pasan contra PostgreSQL y frontend real, sin mocks de la base.
+- **Implementación:** Se añadió `apps/web/e2e/auth-session.spec.ts` y el script `apps/web:test:e2e`. Cubre login, mostrar/ocultar contraseña, acceso al dashboard, logout y protección de ruta.
+- **Pendiente:** Implementar E2E-01 de registro → asignación → atención → SSE y E2E-02 de consulta → cierre → reapertura.
 
 ### P-03 — Matriz de autorización por rol
 
