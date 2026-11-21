@@ -73,8 +73,10 @@ El frontend y backend están implementados y conectados a una instancia PostgreS
 ### P-07 — Recuperación y renovación de sesión
 
 - **Severidad:** Media.
-- **Estado:** Pendiente de evidencia completa.
+- **Estado:** Verificado a nivel de servicios; falta prueba HTTP/E2E en navegador.
 - **Pendiente:** Probar refresh token, expiración, logout, recuperación, token vencido y token reutilizado.
+- **Evidencia:** La suite `apps/api/tests/unit/auth/auth.node.test.ts` ejecutó 12 casos con 12 aprobados, incluyendo rotación y reutilización de refresh token, logout, recuperación de contraseña, reset de un solo uso y cambio de contraseña.
+- **Pendiente residual:** Agregar pruebas de integración HTTP y flujo visual desde el frontend.
 
 ### P-08 — Estados de interfaz
 
