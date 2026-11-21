@@ -97,4 +97,11 @@ test.describe('E2E de autenticación y sesión', () => {
     await expect(page).toHaveURL(/\/dashboard$/);
     await expect(page.locator('main h1', { hasText: 'Dashboard' })).toBeVisible();
   });
+
+  test('rechaza un refresh token manipulado', async ({ request }) => {
+    const response = await request.post(`${API_URL}/auth/refresh`, {
+      headers: { Cookie: 'refresh_token=refresh-token-manipulado' },
+    });
+    expect(response.status()).toBe(401);
+  });
 });

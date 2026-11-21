@@ -79,11 +79,11 @@ El frontend y backend están implementados y conectados a una instancia PostgreS
 
 - **Severidad:** Media.
 - **Estado:** Verificado mediante pruebas unitarias y HTTP/E2E.
-- **Pendiente:** Probar refresh token, expiración, logout, recuperación, token vencido y token reutilizado.
+- **Pendiente:** Ninguno dentro del alcance técnico acordado.
 - **Evidencia:** La suite `apps/api/tests/unit/auth/auth.node.test.ts` ejecutó 12 casos con 12 aprobados, incluyendo rotación y reutilización de refresh token, logout, recuperación de contraseña, reset de un solo uso y cambio de contraseña.
 - **Implementación/verificación:** `apps/web/e2e/auth-session.spec.ts` ahora cubre renovación, rotación e invalidación del refresh token al cerrar sesión, además de recuperación sin revelar la existencia del correo. La suite de autenticación queda con 4 pruebas aprobadas.
 - **Implementación adicional:** Se corrigió `apps/web/src/lib/api.ts` para permitir el reintento automático de `/auth/me` cuando el access token expira, manteniendo excluidos login, refresh y logout.
-- **Evidencia:** E2E de autenticación con 5 pruebas aprobadas, incluyendo un JWT expirado controlado y recuperación automática en `/dashboard`.
+- **Evidencia:** E2E de autenticación con 6 pruebas aprobadas, incluyendo un JWT expirado controlado, recuperación automática en `/dashboard` y rechazo HTTP de un refresh token manipulado.
 
 ### P-08 — Estados de interfaz
 
