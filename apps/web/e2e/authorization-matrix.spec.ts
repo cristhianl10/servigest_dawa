@@ -1,4 +1,5 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
+import { createHmac } from 'node:crypto';
 
 const API_URL = process.env.E2E_API_URL ?? 'http://127.0.0.1:3001/api';
 const password = 'ServiGest2026*';
@@ -8,6 +9,17 @@ const users = {
   technician: 'tecnico@servigest.ec',
   client: 'cliente@servigest.ec',
 };
+
+function expiredToken(): string {
+  const encode = (value: object) => Buffer.from(JSON.stringify(value)).toString('base64url');
+  const header = encode({ alg: 'HS256', typ: 'JWT' });
+  const payload = encode({ sub: 'expired-e2e', role: 'ADMIN', exp: Math.floor(Date.now() / 1000) - 60 });
+  const content = `${header}.${payload}`;
+  const signature = createHmac('sha256', 'super_secret_jwt_key_servigest_2026_dawa_development_only')
+    .update(content)
+    .digest('base64url');
+  return `${content}.${signature}`;
+}
 
 async function token(api: APIRequestContext, email: string): Promise<string> {
   const response = await api.post(`${API_URL}/auth/login`, { data: { email, password } });
@@ -89,4 +101,8 @@ test('matriz de autorización por rol e IDOR', async ({ request }) => {
   await expect(status(request, technician, seededRequest)).resolves.toBe(404);
   await expect(status(request, coordinator, `${seededRequest}/historial`)).resolves.toBe(200);
   await expect(status(request, technician, `${seededRequest}/historial`)).resolves.toBe(404);
+
+  await expect(status(request, 'not-a-jwt', '/usuarios')).resolves.toBe(401);
+  await expect(status(request, 'eyJhbGciOiJIUzI1NiJ9.invalid.signature', '/usuarios')).resolves.toBe(401);
+  await expect(status(request, expiredToken(), '/usuarios')).resolves.toBe(401);
 });
