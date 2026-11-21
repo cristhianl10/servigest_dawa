@@ -165,7 +165,7 @@ export function Layout() {
               <span>{ROLE_LABELS[user.role]}</span>
             </div>
           </div>
-          <button type="button" className="topbar-logout" onClick={handleLogout}>
+          <button type="button" className="topbar-logout" onClick={handleLogout} aria-label="Cerrar sesión">
             <Icon name="logout" size={16} />
             <span>Cerrar sesión</span>
           </button>

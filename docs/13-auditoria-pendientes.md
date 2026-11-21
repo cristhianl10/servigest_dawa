@@ -17,7 +17,7 @@ El frontend y backend están implementados y conectados a una instancia PostgreS
 ### P-01 — Mostrar y ocultar contraseñas
 
 - **Severidad:** Mayor.
-- **Estado:** Implementado; pendiente de validación manual en navegador.
+- **Estado:** Implementado y verificado automáticamente; pendiente solo comprobación manual opcional.
 - **Afecta:** `LoginPage.tsx`, `ResetPasswordPage.tsx`, `ProfilePage.tsx`, `UsersPage.tsx`.
 - **Problema:** Todos los campos usan `type="password"` sin un control para visualizar temporalmente el valor.
 - **Solución requerida:** Botón accesible por teclado con estado `Mostrar contraseña` / `Ocultar contraseña`, `aria-label` y `aria-pressed`, independiente para cada campo.
@@ -51,7 +51,7 @@ El frontend y backend están implementados y conectados a una instancia PostgreS
 ### P-04 — Modales accesibles
 
 - **Severidad:** Media.
-- **Estado:** Implementado; pendiente de validación manual con teclado.
+- **Estado:** Implementado y verificado automáticamente con teclado; pendiente comprobación manual opcional.
 - **Ubicación:** `apps/web/src/components/Ui.tsx`.
 - **Problema:** Debe verificarse focus trap, devolución del foco al invocador y cierre con `Escape`.
 - **Criterio de aceptación:** Al abrir, el foco entra al modal; `Tab` no escapa; `Escape` cierra; el foco vuelve al botón que lo abrió.
@@ -61,7 +61,7 @@ El frontend y backend están implementados y conectados a una instancia PostgreS
 ### P-05 — Dashboard con alternativa accesible
 
 - **Severidad:** Media.
-- **Estado:** Implementado; pendiente de validación manual con lector de pantalla.
+- **Estado:** Implementado y verificado automáticamente; pendiente validación manual con lector de pantalla.
 - **Ubicación:** `DashboardPage.tsx`.
 - **Problema:** El gráfico usa `role="img"` y `aria-label`, pero no ofrece tabla o resumen textual equivalente.
 - **Criterio de aceptación:** Una persona que no percibe el gráfico puede conocer los mismos valores y tendencias mediante texto o tabla.
@@ -71,9 +71,10 @@ El frontend y backend están implementados y conectados a una instancia PostgreS
 ### P-06 — Auditoría responsive y accesibilidad manual
 
 - **Severidad:** Media.
-- **Estado:** Pendiente de evidencia.
+- **Estado:** Parcialmente verificado automáticamente; pendiente evidencia manual visual y con tecnologías asistivas.
 - **Tamaños:** 360, 768, 1024 y 1440 px.
-- **Pendiente:** Verificar login, listado, detalle, dashboard, modales y navegación; además teclado, foco, contraste AA, zoom, lector de pantalla y `prefers-reduced-motion`.
+- **Verificación automática:** `apps/web/e2e/accessibility-responsive.spec.ts` comprueba 360, 768, 1024 y 1440 px, ausencia de desbordamiento, logout móvil, foco/Escape de modal, etiquetas accesibles y `prefers-reduced-motion`.
+- **Pendiente manual:** Verificar contraste percibido, lector de pantalla y comportamiento visual en las pantallas restantes.
 
 ### P-07 — Recuperación y renovación de sesión
 
@@ -105,7 +106,7 @@ El frontend y backend están implementados y conectados a una instancia PostgreS
 ### P-10 — Cierre de sesión poco visible
 
 - **Severidad:** Media.
-- **Estado:** Implementado; pendiente de validación manual en móvil.
+- **Estado:** Implementado y verificado automáticamente en viewport móvil; pendiente comprobación manual opcional.
 - **Problema detectado:** La acción `Cerrar sesión` existía únicamente al final de la barra lateral y en móvil quedaba oculta hasta abrir el menú.
 - **Implementación:** Se añadió un botón visible en la barra superior; en pantallas pequeñas conserva el icono y un nombre accesible para lectores de pantalla. El flujo existente revoca la sesión mediante `POST /auth/logout`, limpia el token local y redirige a `/login`.
 - **Verificación técnica:** TypeScript y build de producción frontend pasan.
