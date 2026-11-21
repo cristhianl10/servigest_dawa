@@ -94,6 +94,14 @@ El frontend y backend están implementados y conectados a una instancia PostgreS
 - **Implementación:** `PageHeader` ahora renderiza la prop como texto contextual sobre el título con estilo consistente.
 - **Verificación técnica:** TypeScript y build de producción frontend pasan.
 
+### P-10 — Cierre de sesión poco visible
+
+- **Severidad:** Media.
+- **Estado:** Implementado; pendiente de validación manual en móvil.
+- **Problema detectado:** La acción `Cerrar sesión` existía únicamente al final de la barra lateral y en móvil quedaba oculta hasta abrir el menú.
+- **Implementación:** Se añadió un botón visible en la barra superior; en pantallas pequeñas conserva el icono y un nombre accesible para lectores de pantalla. El flujo existente revoca la sesión mediante `POST /auth/logout`, limpia el token local y redirige a `/login`.
+- **Verificación técnica:** TypeScript y build de producción frontend pasan.
+
 ## Elementos ya verificados
 
 - Frontend React compila con Vite.
