@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "pnpm --filter @servigest/shared build && pnpm --filter @servigest/api build && pnpm --filter @servigest/web build",
+    "build": "pnpm --filter @servigest/shared build && pnpm --filter @servigest/api prisma:generate && pnpm --filter @servigest/api build && pnpm --filter @servigest/web build",
     "dev:api": "pnpm --filter @servigest/api dev",
     "dev:web": "pnpm --filter @servigest/web dev",
     "test": "pnpm -r test",
