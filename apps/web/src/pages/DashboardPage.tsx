@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import type { DashboardOverview, MySummary, Priority, RequestStatus } from '@servigest/shared';
 import { useAuth } from '../auth/AuthContext';
 import { EmptyState, ErrorBlock, LoadingBlock } from '../components/Feedback';
+import { Icon } from '../components/Icon';
 import { Card, PageHeader, StatCard } from '../components/Ui';
 import { api } from '../lib/api';
 import {
@@ -26,6 +28,7 @@ export function DashboardPage() {
   const [to, setTo] = useState(defaults.to);
 
   const isGlobal = user?.role === 'ADMIN' || user?.role === 'COORDINADOR';
+  const canCreate = isGlobal || user?.role === 'CLIENTE';
   const endpoint = isGlobal ? '/dashboard/indicadores' : '/dashboard/mi-resumen';
 
   const query = useQuery({
@@ -56,16 +59,23 @@ export function DashboardPage() {
             : 'Resumen de las solicitudes vinculadas a tu cuenta.'
         }
         actions={
-          <div className="date-range">
-            <label>
-              <span>Desde</span>
-              <input type="date" value={from} max={to} onChange={(event) => setFrom(event.target.value)} />
-            </label>
-            <label>
-              <span>Hasta</span>
-              <input type="date" value={to} min={from} onChange={(event) => setTo(event.target.value)} />
-            </label>
-          </div>
+          <>
+            <div className="date-range">
+              <label>
+                <span>Desde</span>
+                <input type="date" value={from} max={to} onChange={(event) => setFrom(event.target.value)} />
+              </label>
+              <label>
+                <span>Hasta</span>
+                <input type="date" value={to} min={from} onChange={(event) => setTo(event.target.value)} />
+              </label>
+            </div>
+            {canCreate && (
+              <Link to="/solicitudes/nueva" className="btn btn-primary">
+                <Icon name="plus" size={16} /> Nueva solicitud
+              </Link>
+            )}
+          </>
         }
       />
 
@@ -167,7 +177,7 @@ export function DashboardPage() {
                     <span><i className="legend-created" /> Creadas</span>
                     <span><i className="legend-resolved" /> Resueltas</span>
                   </div>
-                  <div className="evolution-chart" role="img" aria-label="Gráfico de evolución">
+                  <div className="evolution-chart" aria-hidden="true">
                     {data.evolution.map((point) => (
                       <div className="evolution-column" key={point.date}>
                         <div className="evolution-bars">
@@ -186,6 +196,21 @@ export function DashboardPage() {
                       </div>
                     ))}
                   </div>
+                  <table className="sr-only">
+                    <caption>Evolución de solicitudes por período</caption>
+                    <thead>
+                      <tr><th>Período</th><th>Creadas</th><th>Resueltas</th></tr>
+                    </thead>
+                    <tbody>
+                      {data.evolution.map((point) => (
+                        <tr key={`accessible-${point.date}`}>
+                          <th scope="row">{point.date}</th>
+                          <td>{point.created}</td>
+                          <td>{point.resolved}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </Card>
   
   

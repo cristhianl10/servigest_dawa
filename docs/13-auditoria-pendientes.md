@@ -56,10 +56,12 @@ El frontend y backend están implementados y conectados a una instancia PostgreS
 ### P-05 — Dashboard con alternativa accesible
 
 - **Severidad:** Media.
-- **Estado:** Pendiente.
+- **Estado:** Implementado; pendiente de validación manual con lector de pantalla.
 - **Ubicación:** `DashboardPage.tsx`.
 - **Problema:** El gráfico usa `role="img"` y `aria-label`, pero no ofrece tabla o resumen textual equivalente.
 - **Criterio de aceptación:** Una persona que no percibe el gráfico puede conocer los mismos valores y tendencias mediante texto o tabla.
+- **Implementación:** El gráfico visual se oculta para tecnologías asistivas y se añadió una tabla accesible con período, solicitudes creadas y resueltas.
+- **Verificación técnica:** TypeScript y build de producción frontend pasan.
 
 ### P-06 — Auditoría responsive y accesibilidad manual
 
