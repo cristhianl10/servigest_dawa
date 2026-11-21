@@ -71,7 +71,7 @@ export function Layout() {
   };
 
   return (
-    <div className="app-shell">
+    <div className={cn('app-shell', `role-${user.role.toLowerCase()}`)}>
       <aside className={cn('sidebar', menuOpen && 'sidebar-open')}>
         <div className="brand">
           <span className="brand-mark">SG</span>
@@ -79,6 +79,10 @@ export function Layout() {
             <strong>ServiGest</strong>
             <small>Bitácora de servicio</small>
           </div>
+        </div>
+        <div className="role-marker" aria-label={`Rol activo: ${ROLE_LABELS[user.role]}`}>
+          <span className="role-marker-dot" aria-hidden="true" />
+          <span>Sesión · {ROLE_LABELS[user.role]}</span>
         </div>
 
         <nav className="nav" aria-label="Navegación principal">

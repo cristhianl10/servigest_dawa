@@ -308,6 +308,33 @@ code {
 .app-shell {
   display: flex;
   min-height: 100vh;
+  --role-accent: var(--action);
+  --role-accent-border: #d27644;
+  --role-soft: rgba(184, 77, 20, 0.18);
+}
+
+.app-shell.role-admin {
+  --role-accent: #bd5b35;
+  --role-accent-border: #e08a61;
+  --role-soft: rgba(189, 91, 53, 0.2);
+}
+
+.app-shell.role-coordinador {
+  --role-accent: #7d68c5;
+  --role-accent-border: #a796e4;
+  --role-soft: rgba(125, 104, 197, 0.22);
+}
+
+.app-shell.role-tecnico {
+  --role-accent: #258b68;
+  --role-accent-border: #62c39d;
+  --role-soft: rgba(37, 139, 104, 0.22);
+}
+
+.app-shell.role-cliente {
+  --role-accent: #c58a2c;
+  --role-accent-border: #e1b45d;
+  --role-soft: rgba(197, 138, 44, 0.22);
 }
 
 .sidebar {
@@ -348,6 +375,31 @@ code {
   font-size: 0.78rem;
   letter-spacing: 0.04em;
   flex-shrink: 0;
+}
+
+.role-marker {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 12px 18px 0;
+  padding: 7px 9px;
+  border: 1px solid var(--role-accent-border);
+  border-radius: var(--radius-xs);
+  background: var(--role-soft);
+  color: #f1f6f3;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.role-marker-dot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: var(--role-accent-border);
+  box-shadow: 0 0 0 3px var(--role-soft);
 }
 
 .brand-mark-light {
@@ -427,8 +479,8 @@ code {
 }
 
 .nav-link.active {
-  background: var(--action);
-  border-color: #d27644;
+  background: var(--role-accent);
+  border-color: var(--role-accent-border);
   color: var(--action-ink);
   box-shadow: none;
 }
