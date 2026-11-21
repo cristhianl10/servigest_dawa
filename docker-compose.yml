@@ -8,7 +8,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-servigest}
       POSTGRES_DB: ${POSTGRES_DB:-servigest}
     ports:
-      - "5432:5432"
+      # El 5432 del equipo ya está ocupado; dentro de Docker sigue siendo 5432.
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./database:/docker-entrypoint-initdb.d:ro
@@ -24,7 +25,17 @@ services:
       dockerfile: ./apps/api/Dockerfile
     container_name: servigest_api
     restart: unless-stopped
-    env_file: .env
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://servigest:servigest@db:5432/servigest?schema=public
+      JWT_SECRET: ${JWT_SECRET:-super_secret_jwt_key_servigest_2026_dawa_development_only}
+      JWT_ISSUER: servigest-api
+      JWT_AUDIENCE: servigest-web
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
+      WEB_URL: ${WEB_URL:-http://localhost:5173}
+      STORAGE_DRIVER: local
+      STORAGE_LOCAL_PATH: /app/apps/api/storage
     depends_on:
       db:
         condition: service_healthy
