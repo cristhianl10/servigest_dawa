@@ -4,7 +4,7 @@
 -- ==============================================================================
 
 -- Hash Bcrypt para "ServiGest2026*" (costo 10)
--- $2a$10$3euPcmQFCiblsZeEu5s7p.V1sLgL7W3cKj3iFjM2BfQxWnZqK6Yw2
+-- $2a$10$y5degXN5I5iLJ8JziN2iSOgs4CLNOf05DOytFPhyP7OeVMGIymV8u
 
 -- 1. Clientes
 INSERT INTO clients (id, ruc, business_name, trade_name, email, phone, address, status) VALUES
@@ -48,20 +48,20 @@ ON CONFLICT (id) DO NOTHING;
 -- 6. Usuarios del Sistema (Password: "ServiGest2026*")
 -- Password hash: $2a$10$w8k2fDkHQb6r/4G34K6xNu3yMbmP8uYd5vJj8ZfL6iRz0Xw4qPzqm
 INSERT INTO users (id, email, password_hash, full_name, phone, role_id, client_id, status) VALUES
-('00000000-0000-0000-0000-000000000001', 'admin@servigest.ec', '$2a$10$w8k2fDkHQb6r/4G34K6xNu3yMbmP8uYd5vJj8ZfL6iRz0Xw4qPzqm', 'Administrador General', '0990000001', 1, NULL, 'ACTIVO'),
-('00000000-0000-0000-0000-000000000002', 'coordinador@servigest.ec', '$2a$10$w8k2fDkHQb6r/4G34K6xNu3yMbmP8uYd5vJj8ZfL6iRz0Xw4qPzqm', 'Ing. Ana Torres (Coordinación)', '0990000002', 2, NULL, 'ACTIVO'),
-('00000000-0000-0000-0000-000000000003', 'tecnico@servigest.ec', '$2a$10$w8k2fDkHQb6r/4G34K6xNu3yMbmP8uYd5vJj8ZfL6iRz0Xw4qPzqm', 'Luis Vera (Técnico Redes y Servidores)', '0990000003', 3, NULL, 'ACTIVO'),
-('00000000-0000-0000-0000-000000000004', 'cliente@servigest.ec', '$2a$10$w8k2fDkHQb6r/4G34K6xNu3yMbmP8uYd5vJj8ZfL6iRz0Xw4qPzqm', 'Carlos Benites (Banco Guayaquil)', '0990000004', 4, '11111111-1111-1111-1111-111111111111', 'ACTIVO')
+('00000000-0000-0000-0000-000000000001', 'admin@servigest.ec', '$2a$10$y5degXN5I5iLJ8JziN2iSOgs4CLNOf05DOytFPhyP7OeVMGIymV8u', 'Administrador General', '0990000001', 1, NULL, 'ACTIVO'),
+('00000000-0000-0000-0000-000000000002', 'coordinador@servigest.ec', '$2a$10$y5degXN5I5iLJ8JziN2iSOgs4CLNOf05DOytFPhyP7OeVMGIymV8u', 'Ing. Ana Torres (Coordinación)', '0990000002', 2, NULL, 'ACTIVO'),
+('00000000-0000-0000-0000-000000000003', 'tecnico@servigest.ec', '$2a$10$y5degXN5I5iLJ8JziN2iSOgs4CLNOf05DOytFPhyP7OeVMGIymV8u', 'Luis Vera (Técnico Redes y Servidores)', '0990000003', 3, NULL, 'ACTIVO'),
+('00000000-0000-0000-0000-000000000004', 'cliente@servigest.ec', '$2a$10$y5degXN5I5iLJ8JziN2iSOgs4CLNOf05DOytFPhyP7OeVMGIymV8u', 'Carlos Benites (Banco Guayaquil)', '0990000004', 4, '11111111-1111-1111-1111-111111111111', 'ACTIVO')
 ON CONFLICT (id) DO NOTHING;
 
 -- 7. Registro de Técnico y Acreditación de Especialidades
 INSERT INTO technicians (id, user_id, employee_code, availability, max_concurrent_load) VALUES
-('t1111111-1111-1111-1111-111111111111', '00000000-0000-0000-0000-000000000003', 'TEC-001', 'DISPONIBLE', 5)
+('11111111-aaaa-aaaa-aaaa-111111111111', '00000000-0000-0000-0000-000000000003', 'TEC-001', 'DISPONIBLE', 5)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO technician_specialties (technician_id, specialty_id, level) VALUES
-('t1111111-1111-1111-1111-111111111111', 1, 'AVANZADO'),
-('t1111111-1111-1111-1111-111111111111', 3, 'AVANZADO')
+('11111111-aaaa-aaaa-aaaa-111111111111', 1, 'AVANZADO'),
+('11111111-aaaa-aaaa-aaaa-111111111111', 3, 'AVANZADO')
 ON CONFLICT (technician_id, specialty_id) DO NOTHING;
 
 -- 8. Solicitud Semilla para Pruebas Inmediatas
@@ -72,7 +72,7 @@ INSERT INTO service_requests (
     id, code, client_id, site_id, asset_id, category_id, priority, status_id,
     description, created_by, due_at, version, created_at
 ) VALUES (
-    's1111111-1111-1111-1111-111111111111',
+    '22222222-aaaa-aaaa-aaaa-222222222222',
     'SOL-202611-00001',
     '11111111-1111-1111-1111-111111111111',
     'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
@@ -88,5 +88,5 @@ INSERT INTO service_requests (
 ) ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO request_history (request_id, actor_id, action, to_status, comment) VALUES
-('s1111111-1111-1111-1111-111111111111', '00000000-0000-0000-0000-000000000004', 'CREACION', 'REGISTRADA', 'Solicitud registrada por el cliente Banco de Guayaquil')
+('22222222-aaaa-aaaa-aaaa-222222222222', '00000000-0000-0000-0000-000000000004', 'CREACION', 'REGISTRADA', 'Solicitud registrada por el cliente Banco de Guayaquil')
 ON CONFLICT DO NOTHING;

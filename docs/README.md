@@ -56,9 +56,9 @@ Especificar (01) → Planificar (02–04) → Descomponer (06) → Implementar (
 | Especificación | Completada (v1.0) |
 | Plan técnico | Completado (v1.0) |
 | Tareas | Completadas (v1.0) |
-| Implementación | Pendiente |
-| Pruebas | Planificadas |
-| Despliegue | Planificado |
+| Implementación | Frontend y backend implementados; integración local disponible |
+| Pruebas | Verificación local inicial completada; integración y E2E pendientes |
+| Despliegue | Levantamiento local verificado; despliegue público pendiente |
 
 ## Decisiones abiertas
 

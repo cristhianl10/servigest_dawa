@@ -21,8 +21,8 @@ Crear `.env` a partir de `.env.example`. Nunca versionar `.env`.
 | Variable | Ejemplo | Obligatoria | Descripción |
 | :--- | :--- | :-: | :--- |
 | `NODE_ENV` | `development` | Sí | `development`, `test`, `production`. |
-| `PORT` | `3000` | Sí | Puerto de la API. |
-| `DATABASE_URL` | `postgresql://servigest:servigest@localhost:5432/servigest?schema=public` | Sí | Conexión Prisma. |
+| `PORT` | `3000` | Sí | Puerto de la API. En la instancia local de pruebas se usa `3001`. |
+| `DATABASE_URL` | `postgresql://servigest:servigest@localhost:5432/servigest?schema=public` | Sí | Conexión Prisma. La instancia aislada local de pruebas usa el puerto `5433`. |
 | `JWT_SECRET` | cadena aleatoria ≥ 32 caracteres | Sí | Firma del access token. |
 | `JWT_ISSUER` | `servigest-api` | Sí | Emisor. |
 | `JWT_AUDIENCE` | `servigest-web` | Sí | Audiencia. |
@@ -75,6 +75,25 @@ pnpm --filter api prisma db seed
 pnpm --filter api dev
 pnpm --filter web dev
 ```
+
+### 3.3. Instancia local aislada para pruebas
+
+Cuando PostgreSQL está instalado pero no se dispone de una base compartida, se puede
+crear una instancia del proyecto en el directorio `.postgres-dev/`. Esta carpeta es
+local y está excluida de Git.
+
+```bash
+initdb -D .postgres-dev --auth-local=trust --auth-host=scram-sha-256 --encoding=UTF8 --locale=C
+pg_ctl -D .postgres-dev -o "-p 5433 -h 127.0.0.1 -k /tmp" -l /tmp/servigest-postgres.log start
+psql -h /tmp -p 5433 -U "$(whoami)" -d postgres -c "CREATE ROLE servigest LOGIN PASSWORD 'servigest';"
+psql -h /tmp -p 5433 -U "$(whoami)" -d postgres -c "CREATE DATABASE servigest OWNER servigest;"
+psql -h /tmp -p 5433 -U servigest -d servigest -f database/01-init-schema.sql
+psql -h /tmp -p 5433 -U servigest -d servigest -f database/02-seed-data.sql
+```
+
+Para esta instancia, configurar `apps/api/.env` con `DATABASE_URL` apuntando a
+`127.0.0.1:5433` y ejecutar la API en `3001`; el frontend puede usar `5174` si
+`5173` está ocupado.
 
 ### 3.3. `docker-compose.yml` de referencia
 

@@ -14,3 +14,4 @@ test-results/
 
 # Almacenamiento local de adjuntos
 storage/
+.postgres-dev/
