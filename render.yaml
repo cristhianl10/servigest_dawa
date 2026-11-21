@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: servigest-api
+    runtime: docker
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_ISSUER
+        value: servigest-api
+      - key: JWT_AUDIENCE
+        value: servigest-web
+      - key: CORS_ORIGIN
+        sync: false
+      - key: WEB_URL
+        sync: false
+      - key: STORAGE_DRIVER
+        value: local
+      - key: STORAGE_LOCAL_PATH
+        value: /app/apps/api/storage
