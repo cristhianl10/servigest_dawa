@@ -49,6 +49,35 @@ test('matriz de autorización por rol e IDOR', async ({ request }) => {
   await expect(status(request, coordinator, '/clientes')).resolves.toBe(200);
   await expect(status(request, client, '/clientes')).resolves.toBe(403);
 
+  for (const path of [
+    '/especialidades',
+    '/categorias-servicio',
+    '/estados',
+    '/parametros',
+    '/feriados',
+    '/notificaciones',
+    '/roles',
+  ]) {
+    await expect(status(request, admin, path)).resolves.toBe(200);
+    await expect(status(request, client, path)).resolves.toBe(200);
+  }
+
+  for (const path of ['/dashboard/carga-tecnicos', '/dashboard/evolucion']) {
+    expect([200, 400, 422]).toContain(await status(request, admin, path));
+    expect([200, 400, 422]).toContain(await status(request, coordinator, path));
+    await expect(status(request, technician, path)).resolves.toBe(403);
+    await expect(status(request, client, path)).resolves.toBe(403);
+  }
+
+  expect([200, 422]).toContain(await status(request, technician, '/dashboard/mi-resumen'));
+  expect([200, 422]).toContain(await status(request, client, '/dashboard/mi-resumen'));
+  await expect(status(request, admin, '/dashboard/mi-resumen')).resolves.toBe(403);
+
+  for (const path of ['/usuarios', '/tecnicos', '/clientes']) {
+    await expect(status(request, client, path, 'POST')).resolves.toBe(403);
+    await expect(status(request, technician, path, 'POST')).resolves.toBe(403);
+  }
+
   await expect(status(request, admin, '/solicitudes')).resolves.toBe(200);
   await expect(status(request, coordinator, '/solicitudes')).resolves.toBe(200);
   await expect(status(request, technician, '/solicitudes')).resolves.toBe(200);
